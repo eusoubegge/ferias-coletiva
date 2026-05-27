@@ -36,17 +36,20 @@ const CURINGAS = [
 ];
 
 const CSV_MAP = {
-  "matricula":"matricula","matrícula":"matricula",
-  "colaborador":"colaborador",
-  "razao social":"razaoSocial","razão social":"razaoSocial",
-  "gestor direto":"gestorDireto",
-  "diretor":"diretor","regional":"regional",
-  "ferias coletiva":"feriasColetiva","férias coletiva":"feriasColetiva",
-  "email":"email","e-mail":"email",
-  "cargo":"cargo","cargo / função":"cargo",
-  "centro de custo":"centroCusto",
-  "email gestor":"emailGestor",
-  "cpf gestor":"cpfGestor",
+  "matricula":        "matricula",
+  "colaborador":      "colaborador",
+  "razao social":     "razaoSocial",
+  "razão social":     "razaoSocial",
+  "gestor direto":    "gestorDireto",
+  "diretor":          "diretor",
+  "regional":         "regional",
+  "email":            "email",
+  "cargo":            "cargo",
+  "centro de custo":  "centroCusto",
+  "email gestor":     "emailGestor",
+  "cpf gestor":       "cpfGestor",
+  "ferias coletiva":  "feriasColetiva",
+  "férias coletiva":  "feriasColetiva",
 };
 
 function normKey(k){ return k.trim().toLowerCase().replace(/\s+/g," "); }
@@ -60,7 +63,7 @@ function parseCSV(text){
   return lines.slice(1).map(line => {
     const cols = line.split(sep).map(c => c.replace(/"/g,"").trim());
     const obj = {feriasColetiva:null};
-    mapped.forEach((key,i) => { obj[key]=cols[i]||""; });
+    mapped.forEach((key,i) => { obj[key]=(cols[i]||"").trim(); });
     if(obj.feriasColetiva==="") obj.feriasColetiva=null;
     return obj;
   });
@@ -92,12 +95,12 @@ const COLS = [
   {key:"feriasColetiva",label:"Férias Coletiva?"},
   {key:"matricula",     label:"Matrícula"},
   {key:"colaborador",   label:"Colaborador"},
-  {key:"cargo",         label:"Cargo / Função"},
   {key:"razaoSocial",   label:"Razão Social"},
-  {key:"centroCusto",   label:"Centro de Custo"},
   {key:"gestorDireto",  label:"Gestor Direto"},
   {key:"diretor",       label:"Diretor"},
   {key:"regional",      label:"Regional"},
+  {key:"cargo",         label:"Cargo / Função"},
+  {key:"centroCusto",   label:"Centro de Custo"},
   {key:"email",         label:"E-mail"},
 ];
 
@@ -238,7 +241,7 @@ function App(){
   const dadosUsuario = React.useMemo(()=>{
     if(!user) return [];
     if(user.perfil==="admin")    return dados;
-    if(user.perfil==="regional") return dados.filter(c => user.regionais.includes(c.regional));
+    if(user.perfil==="regional") return dados.filter(c => user.regionais.map(r=>r.trim().toUpperCase()).includes((c.regional||"").trim().toUpperCase()));
     if(user.perfil==="gestor")   return dados.filter(c => c.gestorDireto===user.nomeGestor);
     return [];
   },[dados,user]);
@@ -378,12 +381,12 @@ function App(){
                       </td>
                       <td style={{padding:"8px 14px",fontWeight:700,whiteSpace:"nowrap"}}>{c.matricula}</td>
                       <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.colaborador}</td>
-                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.cargo}</td>
                       <td style={{padding:"8px 14px",color:"#64748b",fontSize:12}}>{c.razaoSocial}</td>
-                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.centroCusto}</td>
                       <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.gestorDireto}</td>
                       <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.diretor}</td>
                       <td style={{padding:"8px 14px"}}><span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:600}}>{c.regional}</span></td>
+                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.cargo}</td>
+                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.centroCusto}</td>
                       <td style={{padding:"8px 14px",color:"#64748b",fontSize:12}}>{c.email}</td>
                     </tr>)}
                 </tbody>
