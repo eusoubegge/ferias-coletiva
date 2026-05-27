@@ -275,7 +275,7 @@ function App(){
   async function salvar(){
     setSaving(true); setSavedMsg("");
     const payload = lista.map(c=>({
-      matricula: String(c.matricula).trim(),
+      colaborador: String(c.colaborador).trim(),
       feriasColetiva: c.feriasColetiva||""
     }));
     try{
