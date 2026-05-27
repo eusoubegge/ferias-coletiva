@@ -207,7 +207,7 @@ function App(){
   const [saving,setSaving]     = React.useState(false);
   const [savedMsg,setSavedMsg] = React.useState("");
   const [regFiltro,setRegFiltro]       = React.useState("Todas");
-  const [gestorFiltro,setGestorFiltro] = React.useState("Todos");
+  const [gestorFiltro,setGestorFiltro] = React.useState("");
   const [aba,setAba]           = React.useState("lista");
 
   async function fetchSheet(aba){
@@ -363,16 +363,13 @@ function App(){
             </div>)}
           </div>
           <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
-            {regionaisDoUsuario.length>1&&<select value={regFiltro} onChange={e=>{setRegFiltro(e.target.value);setGestorFiltro("Todos");}}
+            {regionaisDoUsuario.length>1&&<select value={regFiltro} onChange={e=>{setRegFiltro(e.target.value);setGestorFiltro("");}}
               style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,color:"#475569",background:"#fff",cursor:"pointer"}}>
               <option value="Todas">Todas as regionais</option>
               {regionaisDoUsuario.map(r=><option key={r} value={r}>{r}</option>)}
             </select>}
-            {user.perfil!=="gestor"&&<select value={gestorFiltro} onChange={e=>setGestorFiltro(e.target.value)}
-              style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,color:"#475569",background:"#fff",cursor:"pointer",maxWidth:220}}>
-              <option value="Todos">Todos os gestores</option>
-              {gestoresDoUsuario.map(g=><option key={g} value={g}>{g}</option>)}
-            </select>}
+            {user.perfil!=="gestor"&&<input value={gestorFiltro} onChange={e=>setGestorFiltro(e.target.value)} placeholder="🔍 Buscar gestor direto..."
+              style={{minWidth:200,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>}
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar nome ou matrícula..."
               style={{flex:1,minWidth:180,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>
             {["Todos","Sim","Nao","Pendente"].map(f=><button key={f} onClick={()=>setFiltro(f)}
