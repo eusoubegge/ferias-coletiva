@@ -372,8 +372,7 @@ function App(){
               <option value="Todas">Todas as regionais</option>
               {regionaisDoUsuario.map(r=><option key={r} value={r}>{r}</option>)}
             </select>}
-            {user.perfil!=="gestor"&&<input value={gestorFiltro} onChange={e=>setGestorFiltro(e.target.value)} placeholder="🔍 Buscar gestor direto..."
-              style={{minWidth:200,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>}            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar nome ou matrícula..."
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar nome, matrícula ou gestor..."
               style={{flex:1,minWidth:180,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>
             {["Todos","Sim","Nao","Pendente"].map(f=><button key={f} onClick={()=>setFiltro(f)}
               style={{border:"none",borderRadius:8,padding:"7px 14px",cursor:"pointer",fontSize:13,fontWeight:600,
