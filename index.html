@@ -255,7 +255,7 @@ function App(){
   const gestoresDoUsuario = React.useMemo(()=>{
     let base = dadosUsuario;
     if(regFiltro!=="Todas") base=base.filter(c=>c.regional.trim().toUpperCase()===regFiltro.trim().toUpperCase());
-    return [...new Set(base.map(c=>c.gestorDireto).filter(Boolean))].sort();
+    return [...new Set(base.map(c=>(c.gestorDireto||"").trim()).filter(Boolean))].sort();
   },[dadosUsuario,regFiltro]);
 
   const lista = React.useMemo(()=>{
