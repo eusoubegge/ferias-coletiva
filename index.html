@@ -274,11 +274,15 @@ function App(){
 
   async function salvar(){
     setSaving(true); setSavedMsg("");
-    const payload=lista.map(c=>({matricula:c.matricula,colaborador:c.colaborador,regional:c.regional,feriasColetiva:c.feriasColetiva||"",usuario:user.email,timestamp:new Date().toISOString()}));
+    const payload = lista.map(c=>({
+      matricula: String(c.matricula).trim(),
+      feriasColetiva: c.feriasColetiva||""
+    }));
     try{
-      await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      const url = APPS_SCRIPT_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
+      await fetch(url, { method:"GET", mode:"no-cors" });
       setSavedMsg("✅ Respostas salvas!");
-    }catch(e){setSavedMsg("❌ Erro ao salvar.");}
+    }catch(e){ setSavedMsg("❌ Erro ao salvar."); }
     setSaving(false); setTimeout(()=>setSavedMsg(""),4000);
   }
 
