@@ -19,7 +19,7 @@
 
 const SHEETS_ID = "1rlygCOh3dtvYDq9mucTt9kI_OmfSSNJ70WH8iD1T1gc";
 const SHEETS_ABA = "Página1";
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/SEU_SCRIPT_ID/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_LuyMEiLTAJ_7DFGoegd9GN4NQN0FGTCJhXi1ecZmDyfDgvH7UKHWHgwnq_wDyqfT/exec";
 
 function sheetURL(aba){
   return "https://docs.google.com/spreadsheets/d/"+SHEETS_ID+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent(aba);
@@ -206,7 +206,8 @@ function App(){
   const [filtro,setFiltro]     = React.useState("Todos");
   const [saving,setSaving]     = React.useState(false);
   const [savedMsg,setSavedMsg] = React.useState("");
-  const [regFiltro,setRegFiltro] = React.useState("Todas");
+  const [regFiltro,setRegFiltro]       = React.useState("Todas");
+  const [gestorFiltro,setGestorFiltro] = React.useState("Todos");
   const [aba,setAba]           = React.useState("lista");
 
   async function fetchSheet(aba){
@@ -249,6 +250,13 @@ function App(){
   const regionaisDoUsuario = React.useMemo(()=>
     [...new Set(dadosUsuario.map(c=>c.regional).filter(Boolean))].sort()
   ,[dadosUsuario]);
+
+  // Gestores disponíveis com base na regional selecionada
+  const gestoresDoUsuario = React.useMemo(()=>{
+    let base = dadosUsuario;
+    if(regFiltro!=="Todas") base=base.filter(c=>c.regional.trim().toUpperCase()===regFiltro.trim().toUpperCase());
+    return [...new Set(base.map(c=>c.gestorDireto).filter(Boolean))].sort();
+  },[dadosUsuario,regFiltro]);
 
   const lista = React.useMemo(()=>{
     let l=dadosUsuario;
@@ -351,10 +359,15 @@ function App(){
             </div>)}
           </div>
           <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
-            {regionaisDoUsuario.length>1&&<select value={regFiltro} onChange={e=>setRegFiltro(e.target.value)}
+            {regionaisDoUsuario.length>1&&<select value={regFiltro} onChange={e=>{setRegFiltro(e.target.value);setGestorFiltro("Todos");}}
               style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,color:"#475569",background:"#fff",cursor:"pointer"}}>
               <option value="Todas">Todas as regionais</option>
               {regionaisDoUsuario.map(r=><option key={r} value={r}>{r}</option>)}
+            </select>}
+            {user.perfil!=="gestor"&&<select value={gestorFiltro} onChange={e=>setGestorFiltro(e.target.value)}
+              style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,color:"#475569",background:"#fff",cursor:"pointer",maxWidth:220}}>
+              <option value="Todos">Todos os gestores</option>
+              {gestoresDoUsuario.map(g=><option key={g} value={g}>{g}</option>)}
             </select>}
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar nome ou matrícula..."
               style={{flex:1,minWidth:180,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>
