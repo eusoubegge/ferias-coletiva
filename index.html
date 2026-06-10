@@ -50,6 +50,8 @@ const CSV_MAP = {
   "cpf gestor":       "cpfGestor",
   "ferias coletiva":  "feriasColetiva",
   "férias coletiva":  "feriasColetiva",
+  "observacao":       "observacao",
+  "observação":       "observacao",
 };
 
 function normKey(k){ return k.trim().toLowerCase().replace(/\s+/g," "); }
@@ -93,6 +95,7 @@ function PerfilBadge({p}){
 
 const COLS = [
   {key:"feriasColetiva",label:"Férias Coletiva?"},
+  {key:"observacao",    label:"Observação"},
   {key:"matricula",     label:"Matrícula"},
   {key:"colaborador",   label:"Colaborador"},
   {key:"razaoSocial",   label:"Razão Social"},
@@ -276,11 +279,16 @@ function App(){
     setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,feriasColetiva:c.feriasColetiva===op?null:op}:c));
   }
 
+  function setObs(matricula,valor){
+    setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,observacao:valor}:c));
+  }
+
   async function salvar(){
     setSaving(true); setSavedMsg("");
     const payload = lista.map(c=>({
       colaborador: String(c.colaborador).trim(),
-      feriasColetiva: c.feriasColetiva||""
+      feriasColetiva: c.feriasColetiva||"",
+      observacao: c.observacao||""
     }));
     try{
       const url = APPS_SCRIPT_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
@@ -394,6 +402,14 @@ function App(){
                         <div style={{display:"flex",gap:5}}>
                           {["Sim","Nao"].map(op=><button key={op} onClick={()=>toggle(c.matricula,op)} style={tagStyle(c.feriasColetiva===op,op)}>{op==="Nao"?"Não":op}</button>)}
                         </div>
+                      </td>
+                      <td style={{padding:"8px 14px"}}>
+                        {user.perfil==="admin"
+                          ?<input value={c.observacao||""} onChange={e=>setObs(c.matricula,e.target.value)} placeholder="Observação..."
+                            style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"5px 10px",fontSize:12,minWidth:160}}/>
+                          :<span style={{color:c.observacao?"#166534":"#cbd5e1",fontSize:12,fontStyle:c.observacao?"normal":"italic"}}>
+                            {c.observacao||"—"}
+                          </span>}
                       </td>
                       <td style={{padding:"8px 14px",fontWeight:700,whiteSpace:"nowrap"}}>{c.matricula}</td>
                       <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.colaborador}</td>
