@@ -212,6 +212,7 @@ function App(){
   const [regFiltro,setRegFiltro]       = React.useState("Todas");
   const [gestorFiltro,setGestorFiltro] = React.useState("");
   const [aba,setAba]           = React.useState("lista");
+  const [alterados,setAlterados] = React.useState({});
 
   async function fetchSheet(aba){
     const res = await fetch(sheetURL(aba));
@@ -277,23 +278,38 @@ function App(){
 
   function toggle(matricula,op){
     setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,feriasColetiva:c.feriasColetiva===op?null:op}:c));
+    setAlterados(prev=>({...prev,[matricula]:true}));
   }
 
   function setObs(matricula,valor){
     setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,observacao:valor}:c));
+    setAlterados(prev=>({...prev,[matricula]:true}));
   }
 
   async function salvar(){
     setSaving(true); setSavedMsg("");
-    const payload = lista.map(c=>({
-      colaborador: String(c.colaborador).trim(),
-      feriasColetiva: c.feriasColetiva||"",
-      observacao: c.observacao||""
-    }));
+    // Envia apenas os registros alterados
+    const payload = dados
+      .filter(c=>alterados[c.matricula])
+      .map(c=>({
+        colaborador: String(c.colaborador).trim(),
+        feriasColetiva: c.feriasColetiva||"",
+        observacao: c.observacao||""
+      }));
+    if(payload.length===0){
+      setSavedMsg("Nada para salvar.");
+      setSaving(false); setTimeout(()=>setSavedMsg(""),3000);
+      return;
+    }
     try{
-      const url = APPS_SCRIPT_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
-      await fetch(url, { method:"GET", mode:"no-cors" });
-      setSavedMsg("✅ Respostas salvas!");
+      await fetch(APPS_SCRIPT_URL, {
+        method:"POST",
+        mode:"no-cors",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      setSavedMsg("✅ "+payload.length+" registro(s) salvos!");
+      setAlterados({});
     }catch(e){ setSavedMsg("❌ Erro ao salvar."); }
     setSaving(false); setTimeout(()=>setSavedMsg(""),4000);
   }
