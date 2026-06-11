@@ -348,6 +348,17 @@ function App(){
           style={{width:"100%",background:loading?"#a78bfa":"#7c3aed",color:"#fff",border:"none",borderRadius:10,padding:"12px 0",fontWeight:700,fontSize:15,cursor:loading?"default":"pointer"}}>
           {loading?"Verificando...":"Entrar"}
         </button>
+        <div style={{marginTop:22,background:"#f8fafc",borderRadius:10,padding:"14px",textAlign:"center"}}>
+          <p style={{fontSize:12,color:"#64748b",marginBottom:10}}>
+            Em caso de dúvida ou problemas com a ferramenta, contatar:<br/>
+            <b style={{color:"#475569"}}>marlom.rodrigues@cyrela.com.br</b>
+          </p>
+          <a href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
+            target="_blank" rel="noopener noreferrer"
+            style={{display:"inline-flex",alignItems:"center",gap:6,background:"#4b53bc",color:"#fff",borderRadius:8,padding:"8px 18px",fontSize:13,fontWeight:600,textDecoration:"none"}}>
+            💬 Falar no Teams
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -365,8 +376,16 @@ function App(){
             <div style={{fontSize:12,color:"#64748b",display:"flex",alignItems:"center",gap:4}}><PerfilBadge p={user.perfil}/>{user.nome}</div>
           </div>
         </div>
-        <button onClick={()=>{setUser(null);setUInput("");setPInput("");setDados([]);}}
-          style={{background:"none",border:"1px solid #e2e8f0",borderRadius:8,padding:"7px 14px",cursor:"pointer",color:"#64748b",fontSize:13}}>Sair</button>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <a href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
+            target="_blank" rel="noopener noreferrer"
+            title="Em caso de dúvida ou problemas com a ferramenta, contatar: marlom.rodrigues@cyrela.com.br"
+            style={{display:"inline-flex",alignItems:"center",gap:6,background:"#4b53bc",color:"#fff",borderRadius:8,padding:"7px 14px",fontSize:13,fontWeight:600,textDecoration:"none"}}>
+            💬 Suporte
+          </a>
+          <button onClick={()=>{setUser(null);setUInput("");setPInput("");setDados([]);}}
+            style={{background:"none",border:"1px solid #e2e8f0",borderRadius:8,padding:"7px 14px",cursor:"pointer",color:"#64748b",fontSize:13}}>Sair</button>
+        </div>
       </div>
 
       <div style={{maxWidth:1300,margin:"0 auto",padding:"18px 16px"}}>
@@ -452,6 +471,9 @@ function App(){
             </div>
           </div>
         </div>}
+        <div style={{textAlign:"center",marginTop:28,paddingTop:16,borderTop:"1px solid #e2e8f0",fontSize:12,color:"#94a3b8"}}>
+          Em caso de dúvida ou problemas com a ferramenta, contatar: <b style={{color:"#64748b"}}>marlom.rodrigues@cyrela.com.br</b>
+        </div>
       </div>
     </div>
   );
