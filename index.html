@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8"/>
@@ -8,478 +23,1125 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    *{ box-sizing: border-box; margin: 0; padding: 0; }
-    body{ font-family: system-ui, sans-serif; background: #f8fafc; }
-    input, select, button { font-family: inherit; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; }
+    input, select, button, textarea { font-family: inherit; }
+    textarea { resize: vertical; }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
+    const SHEETS_ID = "1rlygCOh3dtvYDq9mucTt9kI_OmfSSNJ70WH8iD1T1gc";
+    const SHEETS_ABA = "Página1";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0yuitSkzAczMAkSo4d6DMS-rInuVyljaPjEiQGtF25p9j9B2apswC-Cc74Z49QaHG/exec";
 
-const SHEETS_ID = "1rlygCOh3dtvYDq9mucTt9kI_OmfSSNJ70WH8iD1T1gc";
-const SHEETS_ABA = "Página1";
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0yuitSkzAczMAkSo4d6DMS-rInuVyljaPjEiQGtF25p9j9B2apswC-Cc74Z49QaHG/exec";
-
-function sheetURL(aba){
-  return "https://docs.google.com/spreadsheets/d/"+SHEETS_ID+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent(aba);
-}
-
-const CURINGAS = [
-  { email:"admin@spcorp.com",        senha:"admin123",  nome:"Administrador Geral", perfil:"admin",    regionais:[] },
-  { email:"curinga.asset@spcorp.com", senha:"asset123", nome:"Curinga ASSET",       perfil:"regional", regionais:["ASSET"] },
-  { email:"curinga.mg@spcorp.com",    senha:"mg123",    nome:"Curinga MG",          perfil:"regional", regionais:["MG"] },
-  { email:"curinga.none@spcorp.com",  senha:"none123",  nome:"Curinga NO/NE",       perfil:"regional", regionais:["NO/NE"] },
-  { email:"curinga.rj@spcorp.com",    senha:"rj123",    nome:"Curinga RJ",          perfil:"regional", regionais:["RJ"] },
-  { email:"curinga.spcorp@spcorp.com",senha:"spcorp123",nome:"Curinga SP/CORP",     perfil:"regional", regionais:["SP/CORP"] },
-  { email:"curinga.sul@spcorp.com",   senha:"sul123",   nome:"Curinga SUL",         perfil:"regional", regionais:["SUL"] },
-];
-
-const CSV_MAP = {
-  "matricula":        "matricula",
-  "colaborador":      "colaborador",
-  "razao social":     "razaoSocial",
-  "razão social":     "razaoSocial",
-  "gestor direto":    "gestorDireto",
-  "diretor":          "diretor",
-  "regional":         "regional",
-  "email":            "email",
-  "cargo":            "cargo",
-  "centro de custo":  "centroCusto",
-  "email gestor":     "emailGestor",
-  "cpf gestor":       "cpfGestor",
-  "ferias coletiva":  "feriasColetiva",
-  "férias coletiva":  "feriasColetiva",
-  "observacao":       "observacao",
-  "observação":       "observacao",
-};
-
-function normKey(k){ return k.trim().toLowerCase().replace(/\s+/g," "); }
-
-function parseCSV(text){
-  const lines = text.replace(/\r/g,"").split("\n").filter(Boolean);
-  if(lines.length<2) return [];
-  const sep = lines[0].includes(";") ? ";" : ",";
-  const headers = lines[0].split(sep).map(h => normKey(h.replace(/"/g,"")));
-  const mapped  = headers.map(h => CSV_MAP[h]||h);
-  return lines.slice(1).map(line => {
-    const cols = line.split(sep).map(c => c.replace(/"/g,"").trim());
-    const obj = {feriasColetiva:null};
-    mapped.forEach((key,i) => { obj[key]=(cols[i]||"").trim(); });
-    if(obj.feriasColetiva==="") obj.feriasColetiva=null;
-    return obj;
-  });
-}
-
-function downloadCSV(rows, filename){
-  const h = ["Matricula","Colaborador","Cargo","Razao Social","Centro de Custo","Gestor Direto","Diretor","Regional","Email","Ferias Coletiva"];
-  const lines = [h.join(";")].concat(rows.map(c =>
-    [c.matricula,c.colaborador,c.cargo,c.razaoSocial,c.centroCusto,c.gestorDireto,c.diretor,c.regional,c.email,c.feriasColetiva||"Pendente"].join(";")
-  ));
-  const blob = new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
-  URL.revokeObjectURL(url);
-}
-
-function tagStyle(active,op){
-  return {border:"none",borderRadius:20,padding:"3px 12px",cursor:"pointer",fontSize:12,fontWeight:700,
-    background:active?(op==="Sim"?"#dcfce7":"#fee2e2"):"#f1f5f9",
-    color:active?(op==="Sim"?"#166534":"#991b1b"):"#94a3b8"};
-}
-
-function PerfilBadge({p}){
-  const cfg = p==="admin"?{bg:"#fee2e2",color:"#991b1b",label:"ADMIN"}:p==="regional"?{bg:"#fef9c3",color:"#854d0e",label:"REGIONAL"}:{bg:"#ede9fe",color:"#5b21b6",label:"GESTOR"};
-  return <span style={{background:cfg.bg,color:cfg.color,borderRadius:20,padding:"1px 10px",fontWeight:700,fontSize:11,marginRight:6}}>{cfg.label}</span>;
-}
-
-const COLS = [
-  {key:"feriasColetiva",label:"Férias Coletiva?"},
-  {key:"observacao",    label:"Observação"},
-  {key:"matricula",     label:"Matrícula"},
-  {key:"colaborador",   label:"Colaborador"},
-  {key:"razaoSocial",   label:"Razão Social"},
-  {key:"gestorDireto",  label:"Gestor Direto"},
-  {key:"diretor",       label:"Diretor"},
-  {key:"regional",      label:"Regional"},
-  {key:"cargo",         label:"Cargo / Função"},
-  {key:"centroCusto",   label:"Centro de Custo"},
-  {key:"email",         label:"E-mail"},
-];
-
-function Resumo({dados, onExport}){
-  const regionais = React.useMemo(() => {
-    const regs = [...new Set(dados.map(c=>c.regional).filter(Boolean))].sort();
-    return regs.map(r => {
-      const g=dados.filter(c=>c.regional===r);
-      const sim=g.filter(c=>c.feriasColetiva==="Sim").length;
-      const nao=g.filter(c=>c.feriasColetiva==="Nao").length;
-      const pend=g.filter(c=>!c.feriasColetiva).length;
-      const tot=g.length;
-      return {r,sim,nao,pend,total:tot,pct:tot>0?Math.round(((sim+nao)/tot)*100):0};
-    });
-  },[dados]);
-  const tot = regionais.reduce((a,r)=>({sim:a.sim+r.sim,nao:a.nao+r.nao,pend:a.pend+r.pend,total:a.total+r.total}),{sim:0,nao:0,pend:0,total:0});
-  const gestoresPend = React.useMemo(()=>{
-    const m={};
-    dados.forEach(c=>{
-      if(!c.feriasColetiva&&c.gestorDireto){
-        if(!m[c.gestorDireto]) m[c.gestorDireto]={gestor:c.gestorDireto,regional:c.regional,pend:0};
-        m[c.gestorDireto].pend++;
-      }
-    });
-    return Object.values(m).sort((a,b)=>b.pend-a.pend).slice(0,10);
-  },[dados]);
-
-  return <div style={{paddingTop:4}}>
-    <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
-      {[{label:"Total geral",val:tot.total,bg:"#ede9fe",color:"#5b21b6"},{label:"Sim — Férias",val:tot.sim,bg:"#dcfce7",color:"#166534"},
-        {label:"Não — Férias",val:tot.nao,bg:"#fee2e2",color:"#991b1b"},{label:"Pendentes",val:tot.pend,bg:"#fef9c3",color:"#854d0e"},
-        {label:"% Respondido",val:tot.total>0?Math.round(((tot.sim+tot.nao)/tot.total)*100)+"%":"—",bg:"#f0fdf4",color:"#166534"},
-      ].map(c=><div key={c.label} style={{background:c.bg,borderRadius:12,padding:"12px 20px",minWidth:110}}>
-        <div style={{fontSize:24,fontWeight:800,color:c.color}}>{c.val}</div>
-        <div style={{fontSize:11,color:c.color,opacity:0.8}}>{c.label}</div>
-      </div>)}
-    </div>
-    <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
-      {[{tipo:"todos",bg:"#7c3aed",label:"⬇️ Exportar tudo"},{tipo:"sim",bg:"#166534",label:"⬇️ Exportar Sim"},
-        {tipo:"nao",bg:"#991b1b",label:"⬇️ Exportar Não"},{tipo:"pendente",bg:"#854d0e",label:"⬇️ Exportar Pendentes"}
-      ].map(b=><button key={b.tipo} onClick={()=>onExport(b.tipo)}
-        style={{background:b.bg,color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",fontWeight:600,fontSize:13,cursor:"pointer"}}>{b.label}</button>)}
-    </div>
-    <div style={{background:"#fff",borderRadius:14,border:"1px solid #e2e8f0",overflow:"hidden",marginBottom:22}}>
-      <div style={{padding:"14px 18px",borderBottom:"1px solid #e2e8f0",fontWeight:700,fontSize:14}}>📊 Resultado por Regional</div>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-        <thead><tr style={{background:"#f8fafc",borderBottom:"2px solid #e2e8f0"}}>
-          {["Regional","Total","Sim","Não","Pendentes","% Respondido","Progresso"].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",color:"#64748b",fontWeight:600,fontSize:12,whiteSpace:"nowrap"}}>{h}</th>)}
-        </tr></thead>
-        <tbody>
-          {regionais.map((r,i)=><tr key={r.r} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"#fff":"#fafafa"}}>
-            <td style={{padding:"10px 16px"}}><span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:20,padding:"2px 10px",fontSize:12,fontWeight:600}}>{r.r}</span></td>
-            <td style={{padding:"10px 16px",fontWeight:700}}>{r.total}</td>
-            <td style={{padding:"10px 16px",color:"#166534",fontWeight:600}}>{r.sim}</td>
-            <td style={{padding:"10px 16px",color:"#991b1b",fontWeight:600}}>{r.nao}</td>
-            <td style={{padding:"10px 16px",color:"#854d0e",fontWeight:600}}>{r.pend}</td>
-            <td style={{padding:"10px 16px",fontWeight:700}}>{r.pct}%</td>
-            <td style={{padding:"10px 16px",minWidth:140}}>
-              <div style={{background:"#f1f5f9",borderRadius:99,height:8,overflow:"hidden"}}>
-                <div style={{width:r.pct+"%",background:r.pct===100?"#22c55e":r.pct>60?"#7c3aed":"#f59e0b",height:"100%",borderRadius:99}}/>
-              </div>
-            </td>
-          </tr>)}
-          <tr style={{borderTop:"2px solid #e2e8f0",background:"#f8fafc",fontWeight:700}}>
-            <td style={{padding:"10px 16px"}}><b>TOTAL</b></td>
-            <td style={{padding:"10px 16px"}}>{tot.total}</td>
-            <td style={{padding:"10px 16px",color:"#166534"}}>{tot.sim}</td>
-            <td style={{padding:"10px 16px",color:"#991b1b"}}>{tot.nao}</td>
-            <td style={{padding:"10px 16px",color:"#854d0e"}}>{tot.pend}</td>
-            <td style={{padding:"10px 16px"}}>{tot.total>0?Math.round(((tot.sim+tot.nao)/tot.total)*100)+"%":"—"}</td>
-            <td/>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    {gestoresPend.length>0&&<div style={{background:"#fff",borderRadius:14,border:"1px solid #e2e8f0",overflow:"hidden"}}>
-      <div style={{padding:"14px 18px",borderBottom:"1px solid #e2e8f0",fontWeight:700,fontSize:14}}>⏳ Gestores com mais pendências</div>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-        <thead><tr style={{background:"#f8fafc",borderBottom:"2px solid #e2e8f0"}}>
-          {["Gestor Direto","Regional","Pendentes"].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",color:"#64748b",fontWeight:600,fontSize:12}}>{h}</th>)}
-        </tr></thead>
-        <tbody>
-          {gestoresPend.map((g,i)=><tr key={g.gestor} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"#fff":"#fafafa"}}>
-            <td style={{padding:"9px 16px",fontWeight:600}}>{g.gestor}</td>
-            <td style={{padding:"9px 16px"}}><span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:600}}>{g.regional}</span></td>
-            <td style={{padding:"9px 16px"}}><span style={{background:"#fef9c3",color:"#854d0e",borderRadius:20,padding:"2px 10px",fontSize:12,fontWeight:700}}>{g.pend}</span></td>
-          </tr>)}
-        </tbody>
-      </table>
-    </div>}
-  </div>;
-}
-
-function App(){
-  const [uInput,setUInput]     = React.useState("");
-  const [pInput,setPInput]     = React.useState("");
-  const [showPass,setShowPass] = React.useState(false);
-  const [loginErr,setLoginErr] = React.useState("");
-  const [loading,setLoading]   = React.useState(false);
-  const [user,setUser]         = React.useState(null);
-  const [dados,setDados]       = React.useState([]);
-  const [search,setSearch]     = React.useState("");
-  const [filtro,setFiltro]     = React.useState("Todos");
-  const [saving,setSaving]     = React.useState(false);
-  const [savedMsg,setSavedMsg] = React.useState("");
-  const [regFiltro,setRegFiltro]       = React.useState("Todas");
-  const [gestorFiltro,setGestorFiltro] = React.useState("");
-  const [aba,setAba]           = React.useState("lista");
-  const [alterados,setAlterados] = React.useState({});
-
-  async function fetchSheet(aba){
-    const res = await fetch(sheetURL(aba));
-    if(!res.ok) throw new Error("Não foi possível acessar a planilha. Verifique se está pública.");
-    return parseCSV(await res.text());
-  }
-
-  async function handleLogin(){
-    setLoginErr(""); setLoading(true);
-    const email = uInput.trim().toLowerCase();
-    const senha = pInput.trim();
-    try{
-      const curinga = CURINGAS.find(u => u.email.toLowerCase()===email && u.senha===senha);
-      if(curinga){
-        setUser({email:curinga.email,nome:curinga.nome,perfil:curinga.perfil,regionais:curinga.regionais,nomeGestor:""});
-        setDados(await fetchSheet(SHEETS_ABA));
-        setLoading(false); return;
-      }
-      const colab = await fetchSheet(SHEETS_ABA);
-      const row   = colab.find(c => (c.emailGestor||"").toLowerCase()===email && c.cpfGestor===senha);
-      if(row){
-        setUser({email,nome:row.gestorDireto,perfil:"gestor",regionais:[],nomeGestor:row.gestorDireto});
-        setDados(colab);
-        setLoading(false); return;
-      }
-      setLoginErr("Usuário ou senha incorretos.");
-    }catch(e){ setLoginErr(e.message); }
-    setLoading(false);
-  }
-
-  const dadosUsuario = React.useMemo(()=>{
-    if(!user) return [];
-    if(user.perfil==="admin")    return dados;
-    if(user.perfil==="regional") return dados.filter(c => user.regionais.map(r=>r.trim().toUpperCase()).includes((c.regional||"").trim().toUpperCase()));
-    if(user.perfil==="gestor")   return dados.filter(c => c.gestorDireto===user.nomeGestor);
-    return [];
-  },[dados,user]);
-
-  const regionaisDoUsuario = React.useMemo(()=>
-    [...new Set(dadosUsuario.map(c=>c.regional).filter(Boolean))].sort()
-  ,[dadosUsuario]);
-
-  // Gestores disponíveis com base na regional selecionada
-  const gestoresDoUsuario = React.useMemo(()=>{
-    let base = dadosUsuario;
-    if(regFiltro!=="Todas") base=base.filter(c=>c.regional.trim().toUpperCase()===regFiltro.trim().toUpperCase());
-    return [...new Set(base.map(c=>(c.gestorDireto||"").trim()).filter(Boolean))].sort();
-  },[dadosUsuario,regFiltro]);
-
-  const lista = React.useMemo(()=>{
-    let l=dadosUsuario;
-    if(regFiltro!=="Todas") l=l.filter(c=>c.regional===regFiltro);
-    if(search) l=l.filter(c=>
-      (c.colaborador||"").toLowerCase().includes(search.toLowerCase()) ||
-      (c.matricula||"").includes(search) ||
-      (c.gestorDireto||"").toLowerCase().includes(search.toLowerCase())
-    );
-    if(filtro==="Sim")      l=l.filter(c=>c.feriasColetiva==="Sim");
-    if(filtro==="Nao")      l=l.filter(c=>c.feriasColetiva==="Nao");
-    if(filtro==="Pendente") l=l.filter(c=>!c.feriasColetiva);
-    return l;
-  },[dadosUsuario,search,filtro,regFiltro]);
-
-  function toggle(matricula,op){
-    setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,feriasColetiva:c.feriasColetiva===op?null:op}:c));
-    setAlterados(prev=>({...prev,[matricula]:true}));
-  }
-
-  function setObs(matricula,valor){
-    setDados(prev=>prev.map(c=>c.matricula===matricula?{...c,observacao:valor}:c));
-    setAlterados(prev=>({...prev,[matricula]:true}));
-  }
-
-  async function salvar(){
-    setSaving(true); setSavedMsg("");
-    // Envia apenas os registros alterados
-    const payload = dados
-      .filter(c=>alterados[c.matricula])
-      .map(c=>({
-        colaborador: String(c.colaborador).trim(),
-        feriasColetiva: c.feriasColetiva||"",
-        observacao: c.observacao||""
-      }));
-    if(payload.length===0){
-      setSavedMsg("Nada para salvar.");
-      setSaving(false); setTimeout(()=>setSavedMsg(""),3000);
-      return;
+    function sheetURL(aba) {
+      return "https://docs.google.com/spreadsheets/d/" + SHEETS_ID + "/gviz/tq?tqx=out:csv&sheet=" + encodeURIComponent(aba);
     }
-    try{
-      await fetch(APPS_SCRIPT_URL, {
-        method:"POST",
-        mode:"no-cors",
-        headers:{ "Content-Type":"text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+
+    const CURINGAS = [
+      { email:"admin@spcorp.com",           senha:"admin123",  nome:"Administrador Geral", perfil:"admin",    regionais:[] },
+      { email:"regional.asset@spcorp.com",  senha:"asset123",  nome:"ASSET",               perfil:"regional", regionais:["ASSET"] },
+      { email:"regional.mg@spcorp.com",     senha:"mg123",     nome:"MG",                  perfil:"regional", regionais:["MG"] },
+      { email:"regional.none@spcorp.com",   senha:"none123",   nome:"NO/NE",               perfil:"regional", regionais:["NO/NE"] },
+      { email:"regional.rj@spcorp.com",     senha:"rj123",     nome:"RJ",                  perfil:"regional", regionais:["RJ"] },
+      { email:"regional.spcorp@spcorp.com", senha:"spcorp123", nome:"SP/CORP",             perfil:"regional", regionais:["SP/CORP"] },
+      { email:"regional.sul@spcorp.com",    senha:"sul123",    nome:"SUL",                 perfil:"regional", regionais:["SUL"] },
+    ];
+
+    const CSV_MAP = {
+      "matricula":        "matricula",
+      "matrícula":        "matricula",
+      "colaborador":      "colaborador",
+      "razao social":     "razaoSocial",
+      "razão social":     "razaoSocial",
+      "gestor direto":    "gestorDireto",
+      "diretor":          "diretor",
+      "regional":         "regional",
+      "email":            "email",
+      "cargo":            "cargo",
+      "centro de custo":  "centroCusto",
+      "email gestor":     "emailGestor",
+      "cpf gestor":       "cpfGestor",
+      "ferias coletiva":  "feriasColetiva",
+      "férias coletiva":  "feriasColetiva",
+      "observacao":       "observacao",
+      "observação":       "observacao",
+      "status":           "status",
+      "motivo":           "motivo",
+      "orientacao":       "orientacao",
+      "orientação":       "orientacao",
+    };
+
+    function normKey(k) {
+      return k.trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function parseCSV(text) {
+      const lines = text.replace(/\r/g, "").split("\n").filter(Boolean);
+      if (lines.length < 2) return [];
+
+      const sep = lines[0].includes(";") ? ";" : ",";
+      const headers = lines[0].split(sep).map(h => normKey(h.replace(/"/g, "")));
+      const mapped = headers.map(h => CSV_MAP[h] || h);
+
+      return lines.slice(1).map(line => {
+        const cols = line.split(sep).map(c => c.replace(/"/g, "").trim());
+        const obj = {
+          feriasColetiva: null,
+          observacao: "",
+          status: "",
+          motivo: "",
+          orientacao: ""
+        };
+        mapped.forEach((key, i) => { obj[key] = (cols[i] || "").trim(); });
+        if (obj.feriasColetiva === "") obj.feriasColetiva = null;
+        return obj;
       });
-      setSavedMsg("✅ "+payload.length+" registro(s) salvos!");
-      setAlterados({});
-    }catch(e){ setSavedMsg("❌ Erro ao salvar."); }
-    setSaving(false); setTimeout(()=>setSavedMsg(""),4000);
-  }
+    }
 
-  function handleExport(tipo){
-    let rows=dadosUsuario;
-    if(tipo==="sim")      rows=rows.filter(c=>c.feriasColetiva==="Sim");
-    if(tipo==="nao")      rows=rows.filter(c=>c.feriasColetiva==="Nao");
-    if(tipo==="pendente") rows=rows.filter(c=>!c.feriasColetiva);
-    downloadCSV(rows,"ferias_coletiva_"+tipo+"_"+new Date().toISOString().slice(0,10)+".csv");
-  }
+    function downloadCSV(rows, filename) {
+      const h = [
+        "Matricula","Colaborador","Cargo","Razao Social","Centro de Custo",
+        "Gestor Direto","Diretor","Regional","Email",
+        "Ferias Coletiva","Observacao","Status","Motivo","Orientacao"
+      ];
 
-  if(!user) return (
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#ede9fe 0%,#f8fafc 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{background:"#fff",borderRadius:20,padding:"40px 36px",width:390,boxShadow:"0 8px 40px rgba(124,58,237,0.10)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28}}>
-          <div style={{background:"#7c3aed",borderRadius:12,width:46,height:46,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>📅</div>
-          <div>
-            <div style={{fontWeight:800,fontSize:18,color:"#1e1b4b"}}>Férias Coletiva</div>
-            <div style={{color:"#7c3aed",fontSize:13,fontWeight:600}}>SPCORP</div>
+      const lines = [h.join(";")].concat(rows.map(c =>
+        [
+          c.matricula,
+          c.colaborador,
+          c.cargo,
+          c.razaoSocial,
+          c.centroCusto,
+          c.gestorDireto,
+          c.diretor,
+          c.regional,
+          c.email,
+          c.feriasColetiva || "Pendente",
+          c.observacao || "",
+          c.status || "",
+          c.motivo || "",
+          c.orientacao || ""
+        ].join(";")
+      ));
+
+      const blob = new Blob(["\uFEFF" + lines.join("\n")], { type:"text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function tagStyle(active, op, disabled) {
+      return {
+        border: "none",
+        borderRadius: 20,
+        padding: "3px 12px",
+        cursor: disabled ? "not-allowed" : "pointer",
+        fontSize: 12,
+        fontWeight: 700,
+        opacity: disabled ? 0.6 : 1,
+        background: active ? (op === "Sim" ? "#dcfce7" : "#fee2e2") : "#f1f5f9",
+        color: active ? (op === "Sim" ? "#166534" : "#991b1b") : "#94a3b8"
+      };
+    }
+
+    function PerfilBadge({ p }) {
+      const cfg = p === "admin"
+        ? { bg:"#fee2e2", color:"#991b1b", label:"ADMIN" }
+        : p === "regional"
+        ? { bg:"#fef9c3", color:"#854d0e", label:"REGIONAL" }
+        : { bg:"#ede9fe", color:"#5b21b6", label:"GESTOR" };
+
+      return (
+        <span style={{
+          background: cfg.bg,
+          color: cfg.color,
+          borderRadius: 20,
+          padding: "1px 10px",
+          fontWeight: 700,
+          fontSize: 11,
+          marginRight: 6
+        }}>
+          {cfg.label}
+        </span>
+      );
+    }
+
+    function TextViewer({ value }) {
+      return (
+        <div style={{
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          overflowWrap: "anywhere",
+          lineHeight: "1.45",
+          color: value ? "#334155" : "#cbd5e1",
+          fontStyle: value ? "normal" : "italic",
+          minWidth: 180
+        }}>
+          {value || "—"}
+        </div>
+      );
+    }
+
+    const COLS_LISTA = [
+      { key:"feriasColetiva", label:"Férias Coletiva?" },
+      { key:"matricula",      label:"Matrícula" },
+      { key:"colaborador",    label:"Colaborador" },
+      { key:"razaoSocial",    label:"Razão Social" },
+      { key:"gestorDireto",   label:"Gestor Direto" },
+      { key:"diretor",        label:"Diretor" },
+      { key:"regional",       label:"Regional" },
+      { key:"cargo",          label:"Cargo / Função" },
+      { key:"centroCusto",    label:"Centro de Custo" },
+      { key:"email",          label:"E-mail" },
+    ];
+
+    function Resumo({ dados, onExport }) {
+      const regionais = React.useMemo(() => {
+        const regs = [...new Set(dados.map(c => c.regional).filter(Boolean))].sort();
+        return regs.map(r => {
+          const g = dados.filter(c => c.regional === r);
+          const sim = g.filter(c => c.feriasColetiva === "Sim").length;
+          const nao = g.filter(c => c.feriasColetiva === "Nao").length;
+          const pend = g.filter(c => !c.feriasColetiva).length;
+          const tot = g.length;
+          return { r, sim, nao, pend, total: tot, pct: tot > 0 ? Math.round(((sim + nao) / tot) * 100) : 0 };
+        });
+      }, [dados]);
+
+      const tot = regionais.reduce((a, r) => ({
+        sim: a.sim + r.sim,
+        nao: a.nao + r.nao,
+        pend: a.pend + r.pend,
+        total: a.total + r.total
+      }), { sim:0, nao:0, pend:0, total:0 });
+
+      const gestoresPend = React.useMemo(() => {
+        const m = {};
+        dados.forEach(c => {
+          if (!c.feriasColetiva && c.gestorDireto) {
+            if (!m[c.gestorDireto]) m[c.gestorDireto] = { gestor:c.gestorDireto, regional:c.regional, pend:0 };
+            m[c.gestorDireto].pend++;
+          }
+        });
+        return Object.values(m).sort((a,b) => b.pend - a.pend).slice(0,10);
+      }, [dados]);
+
+      return (
+        <div style={{ paddingTop:4 }}>
+          <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
+            {[
+              { label:"Total geral", val:tot.total, bg:"#ede9fe", color:"#5b21b6" },
+              { label:"Sim — Férias", val:tot.sim, bg:"#dcfce7", color:"#166534" },
+              { label:"Não — Férias", val:tot.nao, bg:"#fee2e2", color:"#991b1b" },
+              { label:"Pendentes", val:tot.pend, bg:"#fef9c3", color:"#854d0e" },
+              { label:"% Respondido", val:tot.total > 0 ? Math.round(((tot.sim + tot.nao) / tot.total) * 100) + "%" : "—", bg:"#f0fdf4", color:"#166534" }
+            ].map(c => (
+              <div key={c.label} style={{ background:c.bg, borderRadius:12, padding:"12px 20px", minWidth:110 }}>
+                <div style={{ fontSize:24, fontWeight:800, color:c.color }}>{c.val}</div>
+                <div style={{ fontSize:11, color:c.color, opacity:0.8 }}>{c.label}</div>
+              </div>
+            ))}
           </div>
-        </div>
-        <div style={{marginBottom:14}}>
-          <label style={{fontSize:13,fontWeight:600,color:"#475569",display:"block",marginBottom:5}}>E-mail corporativo</label>
-          <input value={uInput} onChange={e=>setUInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="nome@empresa.com"
-            style={{width:"100%",border:"1px solid #cbd5e1",borderRadius:8,padding:"10px 14px",fontSize:14,boxSizing:"border-box"}}/>
-        </div>
-        <div style={{marginBottom:20,position:"relative"}}>
-          <label style={{fontSize:13,fontWeight:600,color:"#475569",display:"block",marginBottom:5}}>Senha</label>
-          <input type={showPass?"text":"password"} value={pInput} onChange={e=>setPInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="Senha"
-            style={{width:"100%",border:"1px solid #cbd5e1",borderRadius:8,padding:"10px 14px",fontSize:14,boxSizing:"border-box"}}/>
-          <span onClick={()=>setShowPass(!showPass)} style={{position:"absolute",right:12,top:34,cursor:"pointer",fontSize:16,color:"#94a3b8"}}>{showPass?"🙈":"👁️"}</span>
-        </div>
-        {loginErr&&<div style={{background:"#fee2e2",color:"#991b1b",borderRadius:8,padding:"8px 12px",fontSize:13,marginBottom:14}}>{loginErr}</div>}
-        <button onClick={handleLogin} disabled={loading}
-          style={{width:"100%",background:loading?"#a78bfa":"#7c3aed",color:"#fff",border:"none",borderRadius:10,padding:"12px 0",fontWeight:700,fontSize:15,cursor:loading?"default":"pointer"}}>
-          {loading?"Verificando...":"Entrar"}
-        </button>
-        <div style={{marginTop:22,background:"#f8fafc",borderRadius:10,padding:"14px",textAlign:"center"}}>
-          <p style={{fontSize:12,color:"#64748b",marginBottom:10}}>
-            Em caso de dúvida ou problemas com a ferramenta, contatar:<br/>
-            <b style={{color:"#475569"}}>marlom.rodrigues@cyrela.com.br</b>
-          </p>
-          <a href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
-            target="_blank" rel="noopener noreferrer"
-            style={{display:"inline-flex",alignItems:"center",gap:6,background:"#4b53bc",color:"#fff",borderRadius:8,padding:"8px 18px",fontSize:13,fontWeight:600,textDecoration:"none"}}>
-            💬 Falar no Teams
-          </a>
-        </div>
-      </div>
-    </div>
-  );
 
-  const pendentes   = lista.filter(c=>!c.feriasColetiva).length;
-  const respondidos = lista.filter(c=>c.feriasColetiva).length;
-
-  return (
-    <div style={{minHeight:"100vh",background:"#f8fafc"}}>
-      <div style={{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"12px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{background:"#7c3aed",borderRadius:10,width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>📅</div>
-          <div>
-            <div style={{fontWeight:700,fontSize:16}}>Férias Coletiva — SPCORP</div>
-            <div style={{fontSize:12,color:"#64748b",display:"flex",alignItems:"center",gap:4}}><PerfilBadge p={user.perfil}/>{user.nome}</div>
+          <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
+            {[
+              { tipo:"todos", bg:"#7c3aed", label:"⬇️ Exportar tudo" },
+              { tipo:"sim", bg:"#166534", label:"⬇️ Exportar Sim" },
+              { tipo:"nao", bg:"#991b1b", label:"⬇️ Exportar Não" },
+              { tipo:"pendente", bg:"#854d0e", label:"⬇️ Exportar Pendentes" }
+            ].map(b => (
+              <button
+                key={b.tipo}
+                onClick={() => onExport(b.tipo)}
+                style={{
+                  background:b.bg,
+                  color:"#fff",
+                  border:"none",
+                  borderRadius:8,
+                  padding:"8px 18px",
+                  fontWeight:600,
+                  fontSize:13,
+                  cursor:"pointer"
+                }}
+              >
+                {b.label}
+              </button>
+            ))}
           </div>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <a href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
-            target="_blank" rel="noopener noreferrer"
-            title="Em caso de dúvida ou problemas com a ferramenta, contatar: marlom.rodrigues@cyrela.com.br"
-            style={{display:"inline-flex",alignItems:"center",gap:6,background:"#4b53bc",color:"#fff",borderRadius:8,padding:"7px 14px",fontSize:13,fontWeight:600,textDecoration:"none"}}>
-            💬 Suporte
-          </a>
-          <button onClick={()=>{setUser(null);setUInput("");setPInput("");setDados([]);}}
-            style={{background:"none",border:"1px solid #e2e8f0",borderRadius:8,padding:"7px 14px",cursor:"pointer",color:"#64748b",fontSize:13}}>Sair</button>
-        </div>
-      </div>
 
-      <div style={{maxWidth:1300,margin:"0 auto",padding:"18px 16px"}}>
-        <div style={{display:"flex",gap:4,marginBottom:20,borderBottom:"2px solid #e2e8f0"}}>
-          {[{id:"lista",label:"📋 Lista de Colaboradores"},{id:"resumo",label:"📊 Resumo & Exportar"}].map(tab=>{
-            const active=aba===tab.id;
-            return <button key={tab.id} onClick={()=>setAba(tab.id)}
-              style={{border:"none",background:"none",padding:"10px 20px",fontWeight:700,fontSize:14,cursor:"pointer",
-                color:active?"#7c3aed":"#94a3b8",borderBottom:active?"3px solid #7c3aed":"3px solid transparent",marginBottom:-2}}>{tab.label}</button>;
-          })}
-        </div>
-
-        {aba==="resumo"&&<Resumo dados={dadosUsuario} onExport={handleExport}/>}
-
-        {aba==="lista"&&<div>
-          <div style={{display:"flex",gap:12,marginBottom:18,flexWrap:"wrap"}}>
-            {[{label:"Visíveis",val:lista.length,bg:"#ede9fe",color:"#5b21b6"},{label:"Respondidos",val:respondidos,bg:"#dcfce7",color:"#166534"},
-              {label:"Pendentes",val:pendentes,bg:"#fef9c3",color:"#854d0e"},{label:"Total equipe",val:dadosUsuario.length,bg:"#f1f5f9",color:"#475569"},
-            ].map(c=><div key={c.label} style={{background:c.bg,borderRadius:12,padding:"12px 20px",minWidth:110}}>
-              <div style={{fontSize:24,fontWeight:800,color:c.color}}>{c.val}</div>
-              <div style={{fontSize:12,color:c.color,opacity:0.8}}>{c.label}</div>
-            </div>)}
+          <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e2e8f0", overflow:"hidden", marginBottom:22 }}>
+            <div style={{ padding:"14px 18px", borderBottom:"1px solid #e2e8f0", fontWeight:700, fontSize:14 }}>
+              Resultado por Regional
+            </div>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+              <thead>
+                <tr style={{ background:"#f8fafc", borderBottom:"2px solid #e2e8f0" }}>
+                  {["Regional","Total","Sim","Não","Pendentes","% Respondido","Progresso"].map(h => (
+                    <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#64748b", fontWeight:600, fontSize:12, whiteSpace:"nowrap" }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {regionais.map((r, i) => (
+                  <tr key={r.r} style={{ borderBottom:"1px solid #f1f5f9", background:i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                    <td style={{ padding:"10px 16px" }}>
+                      <span style={{ background:"#ede9fe", color:"#5b21b6", borderRadius:20, padding:"2px 10px", fontSize:12, fontWeight:600 }}>
+                        {r.r}
+                      </span>
+                    </td>
+                    <td style={{ padding:"10px 16px", fontWeight:700 }}>{r.total}</td>
+                    <td style={{ padding:"10px 16px", color:"#166534", fontWeight:600 }}>{r.sim}</td>
+                    <td style={{ padding:"10px 16px", color:"#991b1b", fontWeight:600 }}>{r.nao}</td>
+                    <td style={{ padding:"10px 16px", color:"#854d0e", fontWeight:600 }}>{r.pend}</td>
+                    <td style={{ padding:"10px 16px", fontWeight:700 }}>{r.pct}%</td>
+                    <td style={{ padding:"10px 16px", minWidth:140 }}>
+                      <div style={{ background:"#f1f5f9", borderRadius:99, height:8, overflow:"hidden" }}>
+                        <div style={{
+                          width: r.pct + "%",
+                          background: r.pct === 100 ? "#22c55e" : r.pct > 60 ? "#7c3aed" : "#f59e0b",
+                          height:"100%",
+                          borderRadius:99
+                        }}/>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                <tr style={{ borderTop:"2px solid #e2e8f0", background:"#f8fafc", fontWeight:700 }}>
+                  <td style={{ padding:"10px 16px" }}><b>TOTAL</b></td>
+                  <td style={{ padding:"10px 16px" }}>{tot.total}</td>
+                  <td style={{ padding:"10px 16px", color:"#166534" }}>{tot.sim}</td>
+                  <td style={{ padding:"10px 16px", color:"#991b1b" }}>{tot.nao}</td>
+                  <td style={{ padding:"10px 16px", color:"#854d0e" }}>{tot.pend}</td>
+                  <td style={{ padding:"10px 16px" }}>{tot.total > 0 ? Math.round(((tot.sim + tot.nao) / tot.total) * 100) + "%" : "—"}</td>
+                  <td/>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
-            {regionaisDoUsuario.length>1&&<select value={regFiltro} onChange={e=>{setRegFiltro(e.target.value);setGestorFiltro("");}}
-              style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",fontSize:13,color:"#475569",background:"#fff",cursor:"pointer"}}>
-              <option value="Todas">Todas as regionais</option>
-              {regionaisDoUsuario.map(r=><option key={r} value={r}>{r}</option>)}
-            </select>}
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar nome, matrícula ou gestor..."
-              style={{flex:1,minWidth:180,border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 14px",fontSize:13}}/>
-            {["Todos","Sim","Nao","Pendente"].map(f=><button key={f} onClick={()=>setFiltro(f)}
-              style={{border:"none",borderRadius:8,padding:"7px 14px",cursor:"pointer",fontSize:13,fontWeight:600,
-                background:filtro===f?"#7c3aed":"#e2e8f0",color:filtro===f?"#fff":"#475569"}}>{f==="Nao"?"Não":f}</button>)}
-            <button onClick={()=>handleExport("todos")}
-              style={{border:"none",borderRadius:8,padding:"7px 14px",cursor:"pointer",fontSize:13,fontWeight:600,background:"#f1f5f9",color:"#475569"}}>⬇️ CSV</button>
-          </div>
-          <div style={{background:"#fff",borderRadius:14,border:"1px solid #e2e8f0",overflow:"hidden"}}>
-            <div style={{overflowX:"auto"}}>
-              <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-                <thead><tr style={{background:"#f8fafc",borderBottom:"2px solid #e2e8f0"}}>
-                  {COLS.map(col=><th key={col.key} style={{padding:"11px 14px",textAlign:"left",color:"#64748b",fontWeight:600,fontSize:12,whiteSpace:"nowrap"}}>{col.label}</th>)}
-                </tr></thead>
+
+          {gestoresPend.length > 0 && (
+            <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e2e8f0", overflow:"hidden" }}>
+              <div style={{ padding:"14px 18px", borderBottom:"1px solid #e2e8f0", fontWeight:700, fontSize:14 }}>
+                Gestores com mais pendências
+              </div>
+              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+                <thead>
+                  <tr style={{ background:"#f8fafc", borderBottom:"2px solid #e2e8f0" }}>
+                    {["Gestor Direto","Regional","Pendentes"].map(h => (
+                      <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#64748b", fontWeight:600, fontSize:12 }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
                 <tbody>
-                  {lista.length===0
-                    ?<tr><td colSpan={COLS.length} style={{padding:40,textAlign:"center",color:"#94a3b8"}}>Nenhum colaborador encontrado.</td></tr>
-                    :lista.map((c,i)=><tr key={c.matricula||i} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"#fff":"#fafafa"}}>
-                      <td style={{padding:"8px 14px"}}>
-                        <div style={{display:"flex",gap:5}}>
-                          {["Sim","Nao"].map(op=><button key={op} onClick={()=>toggle(c.matricula,op)} style={tagStyle(c.feriasColetiva===op,op)}>{op==="Nao"?"Não":op}</button>)}
-                        </div>
+                  {gestoresPend.map((g, i) => (
+                    <tr key={g.gestor} style={{ borderBottom:"1px solid #f1f5f9", background:i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                      <td style={{ padding:"9px 16px", fontWeight:600 }}>{g.gestor}</td>
+                      <td style={{ padding:"9px 16px" }}>
+                        <span style={{ background:"#ede9fe", color:"#5b21b6", borderRadius:20, padding:"2px 10px", fontSize:11, fontWeight:600 }}>
+                          {g.regional}
+                        </span>
                       </td>
-                      <td style={{padding:"8px 14px"}}>
-                        {user.perfil==="admin"
-                          ?<input value={c.observacao||""} onChange={e=>setObs(c.matricula,e.target.value)} placeholder="Observação..."
-                            style={{border:"1px solid #e2e8f0",borderRadius:6,padding:"5px 10px",fontSize:12,minWidth:160}}/>
-                          :<span style={{color:c.observacao?"#166534":"#cbd5e1",fontSize:12,fontStyle:c.observacao?"normal":"italic"}}>
-                            {c.observacao||"—"}
-                          </span>}
+                      <td style={{ padding:"9px 16px" }}>
+                        <span style={{ background:"#fef9c3", color:"#854d0e", borderRadius:20, padding:"2px 10px", fontSize:12, fontWeight:700 }}>
+                          {g.pend}
+                        </span>
                       </td>
-                      <td style={{padding:"8px 14px",fontWeight:700,whiteSpace:"nowrap"}}>{c.matricula}</td>
-                      <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.colaborador}</td>
-                      <td style={{padding:"8px 14px",color:"#64748b",fontSize:12}}>{c.razaoSocial}</td>
-                      <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.gestorDireto}</td>
-                      <td style={{padding:"8px 14px",whiteSpace:"nowrap"}}>{c.diretor}</td>
-                      <td style={{padding:"8px 14px"}}><span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:600}}>{c.regional}</span></td>
-                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.cargo}</td>
-                      <td style={{padding:"8px 14px",color:"#64748b"}}>{c.centroCusto}</td>
-                      <td style={{padding:"8px 14px",color:"#64748b",fontSize:12}}>{c.email}</td>
-                    </tr>)}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [uInput, setUInput] = React.useState("");
+      const [pInput, setPInput] = React.useState("");
+      const [showPass, setShowPass] = React.useState(false);
+      const [loginErr, setLoginErr] = React.useState("");
+      const [loading, setLoading] = React.useState(false);
+      const [user, setUser] = React.useState(null);
+      const [dados, setDados] = React.useState([]);
+      const [search, setSearch] = React.useState("");
+      const [filtro, setFiltro] = React.useState("Todos");
+      const [saving, setSaving] = React.useState(false);
+      const [savedMsg, setSavedMsg] = React.useState("");
+      const [regFiltro, setRegFiltro] = React.useState("Todas");
+      const [aba, setAba] = React.useState("lista");
+      const [alterados, setAlterados] = React.useState({});
+
+      const [obsFiltros, setObsFiltros] = React.useState({
+        matricula: "",
+        colaborador: "",
+        gestorDireto: "",
+        feriasColetiva: "Todos",
+        status: "",
+        motivo: "",
+        orientacao: ""
+      });
+
+      async function fetchSheet(aba) {
+        const res = await fetch(sheetURL(aba));
+        if (!res.ok) throw new Error("Não foi possível acessar a planilha. Verifique se está pública.");
+        return parseCSV(await res.text());
+      }
+
+      async function handleLogin() {
+        setLoginErr("");
+        setLoading(true);
+
+        const email = uInput.trim().toLowerCase();
+        const senha = pInput.trim();
+
+        try {
+          const curinga = CURINGAS.find(u => u.email.toLowerCase() === email && u.senha === senha);
+          if (curinga) {
+            setUser({
+              email: curinga.email,
+              nome: curinga.nome,
+              perfil: curinga.perfil,
+              regionais: curinga.regionais,
+              nomeGestor: ""
+            });
+            setDados(await fetchSheet(SHEETS_ABA));
+            setLoading(false);
+            return;
+          }
+
+          const colab = await fetchSheet(SHEETS_ABA);
+          const row = colab.find(c => (c.emailGestor || "").toLowerCase() === email && c.cpfGestor === senha);
+
+          if (row) {
+            setUser({
+              email,
+              nome: row.gestorDireto,
+              perfil: "gestor",
+              regionais: [],
+              nomeGestor: row.gestorDireto
+            });
+            setDados(colab);
+            setLoading(false);
+            return;
+          }
+
+          setLoginErr("Usuário ou senha incorretos.");
+        } catch (e) {
+          setLoginErr(e.message);
+        }
+
+        setLoading(false);
+      }
+
+      const dadosUsuario = React.useMemo(() => {
+        if (!user) return [];
+        if (user.perfil === "admin") return dados;
+        if (user.perfil === "regional") {
+          return dados.filter(c =>
+            user.regionais.map(r => r.trim().toUpperCase()).includes((c.regional || "").trim().toUpperCase())
+          );
+        }
+        if (user.perfil === "gestor") return dados.filter(c => c.gestorDireto === user.nomeGestor);
+        return [];
+      }, [dados, user]);
+
+      const regionaisDoUsuario = React.useMemo(() =>
+        [...new Set(dadosUsuario.map(c => c.regional).filter(Boolean))].sort()
+      , [dadosUsuario]);
+
+      const tituloTopo = React.useMemo(() => {
+        if (!user) return "Férias Coletiva";
+        if (user.perfil === "regional") {
+          const reg = user.regionais && user.regionais.length ? user.regionais[0] : "";
+          return "Férias Coletiva — Regional " + reg;
+        }
+        return "Férias Coletiva — SPCORP";
+      }, [user]);
+
+      const podeEditarLista = React.useMemo(() => {
+        if (!user) return false;
+        return user.perfil === "admin" || user.perfil === "gestor";
+      }, [user]);
+
+      const podeEditarObservacoes = React.useMemo(() => {
+        if (!user) return false;
+        return user.perfil === "admin";
+      }, [user]);
+
+      const lista = React.useMemo(() => {
+        let l = dadosUsuario;
+
+        if (regFiltro !== "Todas") l = l.filter(c => c.regional === regFiltro);
+
+        if (search) {
+          const s = search.toLowerCase();
+          l = l.filter(c =>
+            (c.colaborador || "").toLowerCase().includes(s) ||
+            (c.matricula || "").includes(search) ||
+            (c.gestorDireto || "").toLowerCase().includes(s)
+          );
+        }
+
+        if (filtro === "Sim") l = l.filter(c => c.feriasColetiva === "Sim");
+        if (filtro === "Nao") l = l.filter(c => c.feriasColetiva === "Nao");
+        if (filtro === "Pendente") l = l.filter(c => !c.feriasColetiva);
+
+        return l;
+      }, [dadosUsuario, search, filtro, regFiltro]);
+
+      const listaObservacoes = React.useMemo(() => {
+        let l = [...lista];
+
+        if (obsFiltros.matricula) {
+          l = l.filter(c =>
+            (c.matricula || "").toLowerCase().includes(obsFiltros.matricula.toLowerCase())
+          );
+        }
+
+        if (obsFiltros.colaborador) {
+          l = l.filter(c =>
+            (c.colaborador || "").toLowerCase().includes(obsFiltros.colaborador.toLowerCase())
+          );
+        }
+
+        if (obsFiltros.gestorDireto) {
+          l = l.filter(c =>
+            (c.gestorDireto || "").toLowerCase().includes(obsFiltros.gestorDireto.toLowerCase())
+          );
+        }
+
+        if (obsFiltros.feriasColetiva === "Sim") {
+          l = l.filter(c => c.feriasColetiva === "Sim");
+        }
+
+        if (obsFiltros.feriasColetiva === "Nao") {
+          l = l.filter(c => c.feriasColetiva === "Nao");
+        }
+
+        if (obsFiltros.feriasColetiva === "Pendente") {
+          l = l.filter(c => !c.feriasColetiva);
+        }
+
+        if (obsFiltros.status) {
+          l = l.filter(c =>
+            (c.status || "").toLowerCase().includes(obsFiltros.status.toLowerCase())
+          );
+        }
+
+        if (obsFiltros.motivo) {
+          l = l.filter(c =>
+            (c.motivo || "").toLowerCase().includes(obsFiltros.motivo.toLowerCase())
+          );
+        }
+
+        if (obsFiltros.orientacao) {
+          l = l.filter(c =>
+            (c.orientacao || "").toLowerCase().includes(obsFiltros.orientacao.toLowerCase())
+          );
+        }
+
+        return l;
+      }, [lista, obsFiltros]);
+
+      function atualizarFiltroObservacao(campo, valor) {
+        setObsFiltros(prev => ({
+          ...prev,
+          [campo]: valor
+        }));
+      }
+
+      function toggle(matricula, op) {
+        if (!podeEditarLista) return;
+        setDados(prev => prev.map(c => c.matricula === matricula ? {
+          ...c,
+          feriasColetiva: c.feriasColetiva === op ? null : op
+        } : c));
+        setAlterados(prev => ({ ...prev, [matricula]: true }));
+      }
+
+      function marcarSimParaTodos() {
+        if (!podeEditarLista) return;
+        const matriculasDaLista = new Set(lista.map(c => c.matricula));
+        setDados(prev => prev.map(c =>
+          matriculasDaLista.has(c.matricula) ? { ...c, feriasColetiva: "Sim" } : c
+        ));
+        setAlterados(prev => {
+          const novo = { ...prev };
+          lista.forEach(c => { novo[c.matricula] = true; });
+          return novo;
+        });
+      }
+
+      function setCampoObservacoes(matricula, campo, valor) {
+        if (!podeEditarObservacoes) return;
+        setDados(prev => prev.map(c => c.matricula === matricula ? { ...c, [campo]: valor } : c));
+        setAlterados(prev => ({ ...prev, [matricula]: true }));
+      }
+
+      async function salvar() {
+        if (user?.perfil === "regional") {
+          setSavedMsg("Perfil regional possui acesso somente consulta.");
+          setTimeout(() => setSavedMsg(""), 3000);
+          return;
+        }
+
+        setSaving(true);
+        setSavedMsg("");
+
+        const payload = dados
+          .filter(c => alterados[c.matricula])
+          .map(c => ({
+            colaborador: String(c.colaborador).trim(),
+            feriasColetiva: c.feriasColetiva || "",
+            observacao: c.observacao || "",
+            status: c.status || "",
+            motivo: c.motivo || "",
+            orientacao: c.orientacao || ""
+          }));
+
+        if (payload.length === 0) {
+          setSavedMsg("Nada para salvar.");
+          setSaving(false);
+          setTimeout(() => setSavedMsg(""), 3000);
+          return;
+        }
+
+        try {
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
+
+          setSavedMsg("✅ " + payload.length + " registro(s) salvos!");
+          setAlterados({});
+        } catch (e) {
+          setSavedMsg("❌ Erro ao salvar.");
+        }
+
+        setSaving(false);
+        setTimeout(() => setSavedMsg(""), 4000);
+      }
+
+      function handleExport(tipo) {
+        let rows = dadosUsuario;
+        if (tipo === "sim") rows = rows.filter(c => c.feriasColetiva === "Sim");
+        if (tipo === "nao") rows = rows.filter(c => c.feriasColetiva === "Nao");
+        if (tipo === "pendente") rows = rows.filter(c => !c.feriasColetiva);
+        downloadCSV(rows, "ferias_coletiva_" + tipo + "_" + new Date().toISOString().slice(0,10) + ".csv");
+      }
+
+      if (!user) {
+        return (
+          <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#ede9fe 0%,#f8fafc 100%)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <div style={{ background:"#fff", borderRadius:20, padding:"40px 36px", width:390, boxShadow:"0 8px 40px rgba(124,58,237,0.10)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:28 }}>
+                <div style={{ background:"#7c3aed", borderRadius:12, width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>📅</div>
+                <div>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#1e1b4b" }}>Férias Coletiva</div>
+                  <div style={{ color:"#7c3aed", fontSize:13, fontWeight:600 }}>SPCORP</div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom:14 }}>
+                <label style={{ fontSize:13, fontWeight:600, color:"#475569", display:"block", marginBottom:5 }}>E-mail corporativo</label>
+                <input
+                  value={uInput}
+                  onChange={e => setUInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleLogin()}
+                  placeholder="nome@empresa.com"
+                  style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:8, padding:"10px 14px", fontSize:14 }}
+                />
+              </div>
+
+              <div style={{ marginBottom:20, position:"relative" }}>
+                <label style={{ fontSize:13, fontWeight:600, color:"#475569", display:"block", marginBottom:5 }}>Senha</label>
+                <input
+                  type={showPass ? "text" : "password"}
+                  value={pInput}
+                  onChange={e => setPInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleLogin()}
+                  placeholder="Senha"
+                  style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:8, padding:"10px 14px", fontSize:14 }}
+                />
+                <span onClick={() => setShowPass(!showPass)} style={{ position:"absolute", right:12, top:34, cursor:"pointer", fontSize:16, color:"#94a3b8" }}>
+                  {showPass ? "🙈" : "👁️"}
+                </span>
+              </div>
+
+              {loginErr && (
+                <div style={{ background:"#fee2e2", color:"#991b1b", borderRadius:8, padding:"8px 12px", fontSize:13, marginBottom:14 }}>
+                  {loginErr}
+                </div>
+              )}
+
+              <button
+                onClick={handleLogin}
+                disabled={loading}
+                style={{ width:"100%", background:loading ? "#a78bfa" : "#7c3aed", color:"#fff", border:"none", borderRadius:10, padding:"12px 0", fontWeight:700, fontSize:15, cursor:loading ? "default" : "pointer" }}
+              >
+                {loading ? "Verificando..." : "Entrar"}
+              </button>
+
+              <div style={{ marginTop:22, background:"#f8fafc", borderRadius:10, padding:"14px", textAlign:"center" }}>
+                <p style={{ fontSize:12, color:"#64748b", marginBottom:10 }}>
+                  Em caso de dúvida ou problemas com a ferramenta, contatar:<br/>
+                  <b style={{ color:"#475569" }}>marlom.rodrigues@cyrela.com.br</b>
+                </p>
+                <a
+                  href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#4b53bc", color:"#fff", borderRadius:8, padding:"8px 18px", fontSize:13, fontWeight:600, textDecoration:"none" }}
+                >
+                  💬 Falar no Teams
+                </a>
+              </div>
+            </div>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:16,flexWrap:"wrap",gap:10}}>
-            <span style={{fontSize:13,color:"#94a3b8"}}>{lista.length} colaboradores exibidos</span>
-            <div style={{display:"flex",alignItems:"center",gap:14}}>
-              {savedMsg&&<span style={{fontSize:14}}>{savedMsg}</span>}
-              <button onClick={salvar} disabled={saving}
-                style={{background:saving?"#a78bfa":"#7c3aed",color:"#fff",border:"none",borderRadius:10,padding:"11px 28px",fontWeight:700,fontSize:14,cursor:saving?"default":"pointer"}}>
-                {saving?"Salvando...":"💾 Salvar Respostas"}
+        );
+      }
+
+      const pendentes = lista.filter(c => !c.feriasColetiva).length;
+      const respondidos = lista.filter(c => c.feriasColetiva).length;
+
+      return (
+        <div style={{ minHeight:"100vh", background:"#f8fafc" }}>
+          <div style={{ background:"#fff", borderBottom:"1px solid #e2e8f0", padding:"12px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+              <div style={{ background:"#7c3aed", borderRadius:10, width:38, height:38, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>📅</div>
+              <div>
+                <div style={{ fontWeight:700, fontSize:16 }}>{tituloTopo}</div>
+                <div style={{ fontSize:12, color:"#64748b", display:"flex", alignItems:"center", gap:4 }}>
+                  <PerfilBadge p={user.perfil} />{user.nome}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <a
+                href="https://teams.microsoft.com/l/chat/48:notes/conversations?context=%7B%22contextType%22%3A%22chat%22%7D"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Em caso de dúvida ou problemas com a ferramenta, contatar: marlom.rodrigues@cyrela.com.br"
+                style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#4b53bc", color:"#fff", borderRadius:8, padding:"7px 14px", fontSize:13, fontWeight:600, textDecoration:"none" }}
+              >
+                💬 Suporte
+              </a>
+              <button
+                onClick={() => { setUser(null); setUInput(""); setPInput(""); setDados([]); setAlterados({}); }}
+                style={{ background:"none", border:"1px solid #e2e8f0", borderRadius:8, padding:"7px 14px", cursor:"pointer", color:"#64748b", fontSize:13 }}
+              >
+                Sair
               </button>
             </div>
           </div>
-        </div>}
-        <div style={{textAlign:"center",marginTop:28,paddingTop:16,borderTop:"1px solid #e2e8f0",fontSize:12,color:"#94a3b8"}}>
-          Em caso de dúvida ou problemas com a ferramenta, contatar: <b style={{color:"#64748b"}}>marlom.rodrigues@cyrela.com.br</b>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+          <div style={{ maxWidth:1800, margin:"0 auto", padding:"18px 16px" }}>
+            <div style={{ display:"flex", gap:4, marginBottom:20, borderBottom:"2px solid #e2e8f0", flexWrap:"wrap" }}>
+              {[
+                { id:"lista", label:"Agendamentos" },
+                { id:"observacoes", label:"Observações" },
+                { id:"resumo", label:"Resumo e Exportar" }
+              ].map(tab => {
+                const active = aba === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setAba(tab.id)}
+                    style={{
+                      border:"none",
+                      background:"none",
+                      padding:"10px 20px",
+                      fontWeight:700,
+                      fontSize:14,
+                      cursor:"pointer",
+                      color:active ? "#7c3aed" : "#94a3b8",
+                      borderBottom:active ? "3px solid #7c3aed" : "3px solid transparent",
+                      marginBottom:-2
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {aba === "resumo" && <Resumo dados={dadosUsuario} onExport={handleExport} />}
+
+            {aba === "lista" && (
+              <div>
+                <div style={{ display:"flex", gap:12, marginBottom:18, flexWrap:"wrap" }}>
+                  {[
+                    { label:"Visíveis", val:lista.length, bg:"#ede9fe", color:"#5b21b6" },
+                    { label:"Respondidos", val:respondidos, bg:"#dcfce7", color:"#166534" },
+                    { label:"Pendentes", val:pendentes, bg:"#fef9c3", color:"#854d0e" },
+                    { label:"Total equipe", val:dadosUsuario.length, bg:"#f1f5f9", color:"#475569" }
+                  ].map(c => (
+                    <div key={c.label} style={{ background:c.bg, borderRadius:12, padding:"12px 20px", minWidth:110 }}>
+                      <div style={{ fontSize:24, fontWeight:800, color:c.color }}>{c.val}</div>
+                      <div style={{ fontSize:12, color:c.color, opacity:0.8 }}>{c.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display:"flex", gap:10, marginBottom:14, flexWrap:"wrap", alignItems:"center" }}>
+                  {regionaisDoUsuario.length > 1 && (
+                    <select
+                      value={regFiltro}
+                      onChange={e => setRegFiltro(e.target.value)}
+                      style={{ border:"1px solid #e2e8f0", borderRadius:8, padding:"8px 12px", fontSize:13, color:"#475569", background:"#fff", cursor:"pointer" }}
+                    >
+                      <option value="Todas">Todas as regionais</option>
+                      {regionaisDoUsuario.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  )}
+
+                  <input
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="🔍 Buscar nome, matrícula ou gestor..."
+                    style={{ flex:1, minWidth:180, border:"1px solid #e2e8f0", borderRadius:8, padding:"8px 14px", fontSize:13 }}
+                  />
+
+                  {["Todos","Sim","Nao","Pendente"].map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setFiltro(f)}
+                      style={{
+                        border:"none",
+                        borderRadius:8,
+                        padding:"7px 14px",
+                        cursor:"pointer",
+                        fontSize:13,
+                        fontWeight:600,
+                        background:filtro === f ? "#7c3aed" : "#e2e8f0",
+                        color:filtro === f ? "#fff" : "#475569"
+                      }}
+                    >
+                      {f === "Nao" ? "Não" : f}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => handleExport("todos")}
+                    style={{ border:"none", borderRadius:8, padding:"7px 14px", cursor:"pointer", fontSize:13, fontWeight:600, background:"#f1f5f9", color:"#475569" }}
+                  >
+                    ⬇️ CSV
+                  </button>
+
+                  {user.perfil === "gestor" && (
+                    <button
+                      onClick={marcarSimParaTodos}
+                      style={{ border:"none", borderRadius:8, padding:"7px 14px", cursor:"pointer", fontSize:13, fontWeight:700, background:"#dcfce7", color:"#166534" }}
+                    >
+                      ✅ Marcar Sim para todos
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e2e8f0", overflow:"hidden" }}>
+                  <div style={{ overflowX:"auto" }}>
+                    <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+                      <thead>
+                        <tr style={{ background:"#f8fafc", borderBottom:"2px solid #e2e8f0" }}>
+                          {COLS_LISTA.map(col => (
+                            <th key={col.key} style={{ padding:"11px 14px", textAlign:"left", color:"#64748b", fontWeight:600, fontSize:12, whiteSpace:"nowrap" }}>
+                              {col.label}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lista.length === 0 ? (
+                          <tr>
+                            <td colSpan={COLS_LISTA.length} style={{ padding:40, textAlign:"center", color:"#94a3b8" }}>
+                              Nenhum colaborador encontrado.
+                            </td>
+                          </tr>
+                        ) : lista.map((c, i) => (
+                          <tr key={c.matricula || i} style={{ borderBottom:"1px solid #f1f5f9", background:i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                            <td style={{ padding:"8px 14px" }}>
+                              <div style={{ display:"flex", gap:5 }}>
+                                {["Sim","Nao"].map(op => (
+                                  <button
+                                    key={op}
+                                    onClick={() => toggle(c.matricula, op)}
+                                    disabled={!podeEditarLista}
+                                    style={tagStyle(c.feriasColetiva === op, op, !podeEditarLista)}
+                                  >
+                                    {op === "Nao" ? "Não" : op}
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                            <td style={{ padding:"8px 14px", fontWeight:700, whiteSpace:"nowrap" }}>{c.matricula}</td>
+                            <td style={{ padding:"8px 14px", whiteSpace:"nowrap" }}>{c.colaborador}</td>
+                            <td style={{ padding:"8px 14px", color:"#64748b", fontSize:12 }}>{c.razaoSocial}</td>
+                            <td style={{ padding:"8px 14px", whiteSpace:"nowrap" }}>{c.gestorDireto}</td>
+                            <td style={{ padding:"8px 14px", whiteSpace:"nowrap" }}>{c.diretor}</td>
+                            <td style={{ padding:"8px 14px" }}>
+                              <span style={{ background:"#ede9fe", color:"#5b21b6", borderRadius:20, padding:"2px 10px", fontSize:11, fontWeight:600 }}>
+                                {c.regional}
+                              </span>
+                            </td>
+                            <td style={{ padding:"8px 14px", color:"#64748b" }}>{c.cargo}</td>
+                            <td style={{ padding:"8px 14px", color:"#64748b" }}>{c.centroCusto}</td>
+                            <td style={{ padding:"8px 14px", color:"#64748b", fontSize:12 }}>{c.email}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:16, flexWrap:"wrap", gap:10 }}>
+                  <span style={{ fontSize:13, color:"#94a3b8" }}>{lista.length} colaboradores exibidos</span>
+                  <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                    {savedMsg && <span style={{ fontSize:14 }}>{savedMsg}</span>}
+                    {user.perfil !== "regional" && (
+                      <button
+                        onClick={salvar}
+                        disabled={saving}
+                        style={{ background:saving ? "#a78bfa" : "#7c3aed", color:"#fff", border:"none", borderRadius:10, padding:"11px 28px", fontWeight:700, fontSize:14, cursor:saving ? "default" : "pointer" }}
+                      >
+                        {saving ? "Salvando..." : "Salvar Respostas"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {aba === "observacoes" && (
+              <div>
+                <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e2e8f0", overflow:"hidden" }}>
+                  <div style={{ overflowX:"auto" }}>
+                    <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13, tableLayout:"fixed" }}>
+                      <colgroup>
+                        <col style={{ width:"9%" }} />
+                        <col style={{ width:"16%" }} />
+                        <col style={{ width:"15%" }} />
+                        <col style={{ width:"10%" }} />
+                        <col style={{ width:"15%" }} />
+                        <col style={{ width:"17%" }} />
+                        <col style={{ width:"18%" }} />
+                      </colgroup>
+
+                      <thead>
+                        <tr style={{ background:"#f8fafc", borderBottom:"1px solid #e2e8f0" }}>
+                          {["Matrícula","Colaborador","Gestor Direto","Férias Coletiva","Status","Motivo","Orientação"].map(h => (
+                            <th
+                              key={h}
+                              style={{
+                                padding:"11px 14px",
+                                textAlign:"left",
+                                color:"#64748b",
+                                fontWeight:700,
+                                fontSize:12,
+                                whiteSpace:"nowrap",
+                                borderBottom:"1px solid #e2e8f0"
+                              }}
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+
+                        <tr style={{ background:"#ffffff", borderBottom:"2px solid #e2e8f0" }}>
+                          <th style={{ padding:"8px 10px" }}>
+                            <input
+                              value={obsFiltros.matricula}
+                              onChange={e => atualizarFiltroObservacao("matricula", e.target.value)}
+                              placeholder="Filtrar"
+                              style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:6, padding:"7px 8px", fontSize:12 }}
+                            />
+                          </th>
+
+                          <th style={{ padding:"8px 10px" }}>
+                            <input
+                              value={obsFiltros.colaborador}
+                              onChange={e => atualizarFiltroObservacao("colaborador", e.target.value)}
+                              placeholder="Filtrar"
+                              style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:6, padding:"7px 8px", fontSize:12 }}
+                            />
+                          </th>
+
+                          <th style={{ padding:"8px 10px" }}>
+                            <input
+                              value={obsFiltros.gestorDireto}
+                              onChange={e => atualizarFiltroObservacao("gestorDireto", e.target.value)}
+                              placeholder="Filtrar"
+                              style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:6, padding:"7px 8px", fontSize:12 }}
+                            />
+                          </th>
+
+                          <th style={{ padding:"8px 10px" }}>
+                            <select
+                              value={obsFiltros.feriasColetiva}
+                              onChange={e => atualizarFiltroObservacao("feriasColetiva", e.target.value)}
+                              style={{ width:"100%", border:"1px solid #cbd5e1", borderRadius:6, padding:"7px 8px", fontSize:12, background:"#fff" }}
+                            >
+                              <option value="Todos">Todos</option>
+                              <option value="Sim">Sim</option>
+                              <option value="Nao">Não</option>
+                              <option value="Pendente">Pendente</option>
+                            </select>
+                          </th>
+
+                          <th style={{ padding:"8px 10px" }}></th>
+
+                          <th style={{ padding:"8px 10px" }}></th>
+
+                          <th style={{ padding:"8px 10px" }}></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {listaObservacoes.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} style={{ padding:40, textAlign:"center", color:"#94a3b8" }}>
+                              Nenhum colaborador encontrado.
+                            </td>
+                          </tr>
+                        ) : listaObservacoes.map((c, i) => (
+                          <tr
+                            key={c.matricula || i}
+                            style={{
+                              borderBottom:"1px solid #f1f5f9",
+                              background:i % 2 === 0 ? "#fff" : "#fafafa",
+                              verticalAlign:"top"
+                            }}
+                          >
+                            <td style={{ padding:"10px 14px", fontWeight:700, whiteSpace:"nowrap" }}>{c.matricula}</td>
+                            <td style={{ padding:"10px 14px" }}>{c.colaborador}</td>
+                            <td style={{ padding:"10px 14px" }}>{c.gestorDireto}</td>
+                            <td style={{ padding:"10px 14px" }}>
+                              <span style={{
+                                background: c.feriasColetiva === "Sim" ? "#dcfce7" : c.feriasColetiva === "Nao" ? "#fee2e2" : "#f1f5f9",
+                                color: c.feriasColetiva === "Sim" ? "#166534" : c.feriasColetiva === "Nao" ? "#991b1b" : "#64748b",
+                                borderRadius:20,
+                                padding:"2px 10px",
+                                fontSize:11,
+                                fontWeight:700
+                              }}>
+                                {c.feriasColetiva === "Nao" ? "Não" : (c.feriasColetiva || "Pendente")}
+                              </span>
+                            </td>
+
+                            <td style={{ padding:"10px 14px", minWidth:0, wordBreak:"break-word" }}>
+                              {podeEditarObservacoes ? (
+                                <input
+                                  value={c.status || ""}
+                                  onChange={e => setCampoObservacoes(c.matricula, "status", e.target.value)}
+                                  placeholder="Status"
+                                  style={{ width:"100%", border:"1px solid #e2e8f0", borderRadius:6, padding:"7px 10px", fontSize:12 }}
+                                />
+                              ) : (
+                                <TextViewer value={c.status} />
+                              )}
+                            </td>
+
+                            <td style={{ padding:"10px 14px", minWidth:0, wordBreak:"break-word" }}>
+                              {podeEditarObservacoes ? (
+                                <textarea
+                                  value={c.motivo || ""}
+                                  onChange={e => setCampoObservacoes(c.matricula, "motivo", e.target.value)}
+                                  placeholder="Motivo"
+                                  rows={5}
+                                  style={{ width:"100%", border:"1px solid #e2e8f0", borderRadius:6, padding:"7px 10px", fontSize:12 }}
+                                />
+                              ) : (
+                                <TextViewer value={c.motivo} />
+                              )}
+                            </td>
+
+                            <td style={{ padding:"10px 14px", minWidth:0, wordBreak:"break-word" }}>
+                              {podeEditarObservacoes ? (
+                                <textarea
+                                  value={c.orientacao || ""}
+                                  onChange={e => setCampoObservacoes(c.matricula, "orientacao", e.target.value)}
+                                  placeholder="Orientação"
+                                  rows={5}
+                                  style={{ width:"100%", border:"1px solid #e2e8f0", borderRadius:6, padding:"7px 10px", fontSize:12 }}
+                                />
+                              ) : (
+                                <TextViewer value={c.orientacao} />
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:16, flexWrap:"wrap", gap:10 }}>
+                  <span style={{ fontSize:13, color:"#94a3b8" }}>
+                    {listaObservacoes.length} colaboradores exibidos
+                  </span>
+
+                  <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                    <button
+                      onClick={() => setObsFiltros({
+                        matricula: "",
+                        colaborador: "",
+                        gestorDireto: "",
+                        feriasColetiva: "Todos",
+                        status: "",
+                        motivo: "",
+                        orientacao: ""
+                      })}
+                      style={{ background:"#f1f5f9", color:"#475569", border:"none", borderRadius:10, padding:"11px 18px", fontWeight:700, fontSize:13, cursor:"pointer" }}
+                    >
+                      Limpar filtros
+                    </button>
+
+                    {savedMsg && <span style={{ fontSize:14 }}>{savedMsg}</span>}
+
+                    {podeEditarObservacoes && (
+                      <button
+                        onClick={salvar}
+                        disabled={saving}
+                        style={{ background:saving ? "#a78bfa" : "#7c3aed", color:"#fff", border:"none", borderRadius:10, padding:"11px 28px", fontWeight:700, fontSize:14, cursor:saving ? "default" : "pointer" }}
+                      >
+                        {saving ? "Salvando..." : "Salvar Observações"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ textAlign:"center", marginTop:28, paddingTop:16, borderTop:"1px solid #e2e8f0", fontSize:12, color:"#94a3b8" }}>
+              Em caso de dúvida ou problemas com a ferramenta, contatar: <b style={{ color:"#64748b" }}>marlom.rodrigues@cyrela.com.br</b>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
 </body>
 </html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
