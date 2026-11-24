@@ -1,528 +1,83 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Casa em equilíbrio — Planejamento familiar</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#3355ff"><title>Casa em equilíbrio</title>
 <style>
-:root{--bg:#f6f3ec;--card:#fff;--ink:#23312b;--muted:#6b7a72;--line:#e5e0d3;--green:#2f6f55;--green-soft:#e3f0e9;--red:#b4503c;--red-soft:#f8e6e1;--amber:#a9792a;--amber-soft:#f7edd5;--gray-soft:#ecebe6}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh}
-aside{width:250px;background:#fff;border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:22px;flex-shrink:0}
-.brand{display:flex;gap:10px;align-items:center}
-.brand .logo{width:40px;height:40px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:22px}
-.brand b{display:block;font-size:15px}.brand small{color:var(--muted)}
-.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
-nav a{display:flex;gap:10px;padding:10px 12px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:14px;cursor:pointer}
-nav a:hover{background:var(--green-soft)}
-.quote{margin-top:auto;background:var(--green-soft);border-radius:14px;padding:14px;font-size:13px;color:var(--green)}
-.quote b{display:block;margin-bottom:4px}
-main{flex:1;padding:28px 34px;max-width:1200px;min-width:0}
-.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin-bottom:16px}
-.badge{padding:4px 10px;border-radius:99px;font-size:12px;background:var(--amber-soft);color:var(--amber)}
-.badge.ok{background:var(--green-soft);color:var(--green)}
-.banner{background:var(--amber-soft);border:1px solid #ecd9a6;border-radius:14px;padding:14px 16px;margin-bottom:18px;display:none}
-.banner.show{display:block}
-.banner h3{margin:0 0 4px;font-size:15px}.banner p{margin:2px 0;font-size:13px;color:#6d5620}
-.banner .row{margin-top:10px;display:flex;gap:8px}
-button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#fff;padding:8px 14px;color:var(--ink)}
-button:hover{background:var(--gray-soft)}
-button.primary{background:var(--green);border-color:var(--green);color:#fff}
-button.primary:hover{background:#265b46}
-button:disabled{opacity:.6;cursor:wait}
-.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap;margin-bottom:22px}
-.hero small{color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:11px}
-.hero h1{margin:4px 0;font-size:32px}.hero p{margin:0;color:var(--muted)}
-.balance{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;display:flex;gap:18px;align-items:center}
-.balance span{font-size:12px;color:var(--muted);display:block}.balance b{font-size:24px}
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 16px}
-.filters strong{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-select,input{font:inherit;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
-.filters select{width:auto}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
-.kpi small{color:var(--muted);font-size:13px}.kpi b{display:block;font-size:24px;margin:6px 0 2px}.kpi span{font-size:12px;color:var(--muted)}
-.grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:18px}
-h2{margin:0 0 2px;font-size:18px}.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
-.legend{font-size:12px;color:var(--muted);display:flex;gap:12px;margin-top:8px}
-.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}
-.chart{display:flex;gap:10px;align-items:flex-end;height:190px;border-bottom:1px solid var(--line);padding-top:10px;overflow-x:auto}
-.col{flex:1;min-width:46px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:pointer;border-radius:8px;padding:4px 2px}
-.col:hover,.col.sel{background:var(--green-soft)}
-.bars{display:flex;gap:4px;align-items:flex-end;height:150px}
-.bar{width:14px;border-radius:5px 5px 0 0;min-height:2px}
-.bar.exp{background:var(--red)}.bar.inc{background:var(--green)}
-.col small{font-size:11px;color:var(--muted);margin-top:4px}
-.rank{display:flex;flex-direction:column;gap:12px}
-.rank div.r small{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
-.track{height:8px;background:var(--gray-soft);border-radius:99px;overflow:hidden}
-.track i{display:block;height:100%;background:var(--red);border-radius:99px}
-.insight{background:var(--green-soft);color:#1f4d3b;border-radius:12px;padding:12px;font-size:13px;margin-top:14px}
-.head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px;border-bottom:1px solid var(--line)}
-td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
-td small{display:block;color:var(--muted);font-size:12px}
-.tw{overflow-x:auto}
-.pill{padding:3px 9px;border-radius:99px;font-size:12px;white-space:nowrap}
-.p-Pago{background:var(--green-soft);color:var(--green)}
-.p-Naopago{background:var(--gray-soft);color:var(--muted)}
-.p-Atrasado{background:var(--red-soft);color:var(--red)}
-.p-Aconfirmar{background:var(--amber-soft);color:var(--amber)}
-.p-Cancelado{background:var(--gray-soft);color:#999;text-decoration:line-through}
-.neg{color:var(--red)}.pos{color:var(--green)}
-.acts{white-space:nowrap;text-align:right}
-.acts button{padding:4px 9px;margin-left:3px}
-.goals{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-.goal small{color:var(--muted)}.goal b{display:block;font-size:22px;margin:6px 0}
-.empty{color:var(--muted);text-align:center;padding:22px 0;font-size:14px}
-section{margin-bottom:26px;scroll-margin-top:16px}
-.modal{position:fixed;inset:0;background:rgba(25,35,30,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
-.modal.show{display:flex}
-.box{background:#fff;border-radius:18px;padding:22px;width:100%;max-width:480px;max-height:92vh;overflow:auto}
-.box h2{margin-bottom:4px}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
-.form label{font-size:12px;color:var(--muted);display:block}
-.form label input,.form label select{margin-top:4px;color:var(--ink)}
-.form .full{grid-column:1/-1}
-.actions{display:flex;justify-content:flex-end;gap:8px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:20}
-.toast.show{display:block}
-@media(max-width:900px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;align-items:center}.quote{display:none}main{padding:18px}.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+:root,.dv-root{--dv-bg:#eef1f8;--dv-surface:#fff;--dv-surface2:#f7f9fd;--dv-ink:#0f1729;--dv-ink2:#5a6884;--dv-ink3:#8b98b3;--dv-line:#e2e8f4;--dv-primary:#3355ff;--dv-accent:#8a4dff;--dv-good:#0f9d58;--dv-warn:#e8890c;--dv-bad:#e0474c;--dv-heroA:#1b1150;--dv-heroB:#3a1a72;--dv-r:14px;--dv-r2:10px;--dv-gap:12px;--dv-shadow:0 14px 36px rgba(29,43,85,.07);--dv-shadow-sm:0 5px 18px rgba(29,43,85,.06);--dv-font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.dv-root[data-theme='dark'],:root[data-theme='dark']{color-scheme:dark;--dv-bg:#070a14;--dv-surface:#0f1424;--dv-surface2:#151c31;--dv-ink:#eaf0ff;--dv-ink2:#93a1c4;--dv-ink3:#6b7899;--dv-primary:#5c8bff;--dv-accent:#b46bff;--dv-good:#22d39a;--dv-warn:#ffb02e;--dv-bad:#ff5d6c;--dv-heroA:#150e3d;--dv-heroB:#2b1560;--dv-line:#242c43;--dv-shadow:0 14px 36px rgba(0,0,0,.22);--dv-shadow-sm:0 5px 18px rgba(0,0,0,.18)}
+*{box-sizing:border-box}html,body{margin:0}.dv-gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:var(--dv-bg);color:var(--dv-ink);font:14px/1.5 var(--dv-font)}.dv-gate[hidden]{display:none}.dv-gate form{width:min(380px,100%);background:var(--dv-surface);border:1px solid var(--dv-line);border-radius:var(--dv-r);box-shadow:var(--dv-shadow);padding:26px;display:grid;gap:12px}.dv-gate h1{margin:0;font-size:20px;letter-spacing:-.4px}.dv-gate p{margin:0;color:var(--dv-ink2);font-size:12px}.dv-gate input{width:100%;border:1px solid var(--dv-line);border-radius:var(--dv-r2);padding:11px;background:var(--dv-surface);color:var(--dv-ink);font:inherit;font-size:16px}.dv-gate button{border:0;border-radius:var(--dv-r2);background:var(--dv-primary);color:#fff;padding:11px;font:inherit;font-weight:700;cursor:pointer}.dv-gate button:disabled{opacity:.6;cursor:default}.dv-gate-msg{color:var(--dv-bad);font-size:12px;min-height:18px}body{background:var(--dv-bg)}.dv-goal-edit{border:0;background:transparent;color:var(--dv-ink3);font-size:12px;padding:4px}.dv-goal-edit:hover{color:var(--dv-primary)}.dv-del-confirm{display:inline-flex;gap:4px}.dv-del-confirm button{border:1px solid var(--dv-line);background:var(--dv-surface);border-radius:8px;padding:3px 7px;font-size:9px;font-weight:700}.dv-del-confirm .yes{background:var(--dv-bad);border-color:var(--dv-bad);color:white}.modalfoot .dv-danger{margin-right:auto;border:1px solid var(--dv-bad);color:var(--dv-bad);background:transparent;border-radius:var(--dv-r2);padding:8px 12px}.dv-goals-note{font-size:9px;color:var(--dv-ink3);margin-top:8px}.dv-root{min-height:100vh;background:var(--dv-bg);color:var(--dv-ink);font:14px/1.5 var(--dv-font);transition:background .45s,color .45s}.dv-root button,.dv-root input,.dv-root select{font:inherit}.dv-root button{cursor:pointer;color:inherit}.dv-layout{display:flex;min-height:100vh}.dv-side{width:232px;flex:0 0 232px;background:var(--dv-surface);border-right:1px solid var(--dv-line);padding:24px 15px;display:flex;flex-direction:column;gap:30px}.dv-brand{display:flex;align-items:center;gap:11px;padding:0 8px}.dv-logo{width:38px;height:38px;border-radius:var(--dv-r2);display:grid;place-items:center;background:var(--dv-primary);color:white;font-size:19px}.dv-brand strong{display:block;font-size:14px;letter-spacing:-.3px}.dv-brand small{color:var(--dv-ink2);font-size:10px}.dv-navtitle{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dv-ink3);padding:0 12px;margin:0 0 8px}.dv-nav{display:grid;gap:5px}.dv-nav button{border:0;background:transparent;color:var(--dv-ink2);text-align:left;padding:10px 12px;border-radius:var(--dv-r2);font-weight:600}.dv-nav button.active,.dv-nav button:hover{background:var(--dv-surface2);color:var(--dv-primary)}.dv-nav button span{display:inline-block;width:26px;font-size:16px}.dv-side-note{margin-top:auto;padding:14px;background:var(--dv-surface2);border:1px solid var(--dv-line);border-radius:var(--dv-r2)}.dv-side-note b{font-size:11px}.dv-side-note p{font-size:10px;color:var(--dv-ink2);margin:5px 0 0}.dv-main{min-width:0;flex:1;max-width:1600px;margin:auto;padding:24px clamp(16px,3.2vw,48px) 42px}.dv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:var(--dv-ink2);font-size:11px}.dv-connection-alert{display:none;margin:-5px 0 14px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--dv-bad) 42%,var(--dv-line));border-left:4px solid var(--dv-bad);border-radius:var(--dv-r2);background:color-mix(in srgb,var(--dv-bad) 7%,var(--dv-surface));color:var(--dv-ink);box-shadow:var(--dv-shadow-sm)}.dv-connection-alert.show{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.dv-connection-alert h2{font-size:12px;margin:0 0 4px}.dv-connection-alert p{font-size:11px;color:var(--dv-ink2);margin:0 0 5px}.dv-connection-alert small{font-size:10px;color:var(--dv-ink3)}.dv-alert-actions{display:flex;flex-wrap:wrap;gap:7px;flex:0 0 auto}.dv-alert-actions button{border:1px solid var(--dv-line);background:var(--dv-surface);border-radius:var(--dv-r2);padding:7px 10px;font-size:10px;font-weight:700}.dv-alert-actions .dv-alert-primary{background:var(--dv-bad);border-color:var(--dv-bad);color:white}.dv-connection-alert[hidden]{display:none}@media(max-width:600px){.dv-connection-alert.show{display:block}.dv-alert-actions{margin-top:10px}}.dv-top-right{display:flex;align-items:center;gap:9px}.dv-chip,.dv-month,.dv-icon-btn{background:var(--dv-surface);border:1px solid var(--dv-line);border-radius:var(--dv-r2);padding:8px 10px;color:var(--dv-ink2)}.dv-chip{display:inline-flex;align-items:center;gap:7px;font-size:10px}.dv-chip i{width:7px;height:7px;border-radius:50%;background:currentColor}.dv-month{font-size:11px}.dv-icon-btn{width:36px;height:36px;display:grid;place-items:center;font-size:15px}.dv-hero{position:relative;overflow:hidden;padding:25px 28px;margin-bottom:14px;border-radius:var(--dv-r);background:linear-gradient(115deg,var(--dv-heroA),var(--dv-heroB));color:white;box-shadow:var(--dv-shadow)}.dv-hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(255,255,255,.13);border-radius:50%;right:7%;top:-145px;box-shadow:0 0 0 35px rgba(255,255,255,.035),0 0 0 70px rgba(255,255,255,.025)}.dv-hero-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}.dv-eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;opacity:.76;font-weight:750}.dv-hero h1{font-size:clamp(23px,3vw,32px);line-height:1.12;letter-spacing:-1px;margin:7px 0}.dv-hero p{margin:0;color:rgba(255,255,255,.76);font-size:12px}.dv-hero-side{text-align:right;min-width:130px}.dv-hero-side span{font-size:10px;color:rgba(255,255,255,.72)}.dv-hero-side strong{display:block;font-size:23px;margin-top:3px;letter-spacing:-.5px}.dv-primary-btn{border:0;border-radius:var(--dv-r2);background:var(--dv-primary);color:white!important;font-weight:700;padding:10px 14px;box-shadow:var(--dv-shadow-sm)}.dv-hero .dv-primary-btn{background:white;color:var(--dv-heroA)!important}.dv-ticker{height:34px;overflow:hidden;display:flex;align-items:center;background:var(--dv-surface);border:1px solid var(--dv-line);border-radius:var(--dv-r2);margin-bottom:14px}.dv-ticker-label{height:100%;display:grid;place-items:center;padding:0 12px;background:var(--dv-surface2);border-right:1px solid var(--dv-line);color:var(--dv-ink2);font-weight:750;font-size:9px;letter-spacing:.7px;white-space:nowrap}.dv-ticker-window{overflow:hidden;flex:1}.dv-ticker-track{display:flex;align-items:center;gap:30px;width:max-content;padding-left:18px;animation:dv-ticker 36s linear infinite}.dv-ticker:hover .dv-ticker-track{animation-play-state:paused}.dv-ticker-item{font-size:10px;color:var(--dv-ink2);white-space:nowrap}.dv-ticker-item b{color:var(--dv-ink);margin-left:5px}@keyframes dv-ticker{to{transform:translateX(-50%)}}.dv-filters{position:relative;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--dv-surface);border:1px solid var(--dv-line);padding:10px;border-radius:var(--dv-r);margin-bottom:14px;box-shadow:var(--dv-shadow-sm)}.dv-filter-label{font-size:10px;font-weight:750;color:var(--dv-ink2);padding:0 4px}.dv-filters select,.dv-filters input{border:1px solid var(--dv-line);border-radius:var(--dv-r2);background:var(--dv-surface);color:var(--dv-ink);padding:8px 10px;font-size:10px;min-width:120px}.dv-filters input{flex:1;min-width:170px}.dv-clear{border:0;background:transparent;color:var(--dv-primary);font-weight:700;font-size:10px;padding:8px}.dv-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--dv-gap);margin-bottom:var(--dv-gap)}.dv-card,.dv-panel{background:var(--dv-surface);border:1px solid var(--dv-line);border-radius:var(--dv-r);box-shadow:var(--dv-shadow-sm)}.dv-card{padding:16px 17px;min-width:0;animation:dv-rise .6s both}.dv-card:nth-child(2){animation-delay:.06s}.dv-card:nth-child(3){animation-delay:.12s}.dv-card:nth-child(4){animation-delay:.18s}@keyframes dv-rise{from{opacity:.55;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.dv-card-top{display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--dv-ink2);font-size:10px}.dv-icon{width:28px;height:28px;display:grid;place-items:center;border-radius:var(--dv-r2);background:var(--dv-surface2);color:var(--dv-primary);font-size:14px}.dv-value{font-size:clamp(19px,2vw,25px);line-height:1.2;letter-spacing:-.7px;font-weight:780;margin:10px 0 5px}.dv-card-foot{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:9px;color:var(--dv-ink2)}.dv-delta{font-weight:750}.dv-good{color:var(--dv-good)}.dv-warn{color:var(--dv-warn)}.dv-bad{color:var(--dv-bad)}.dv-grid-main{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);gap:var(--dv-gap);margin-bottom:var(--dv-gap)}.dv-panel{padding:17px;min-width:0}.dv-panelhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:13px}.dv-panelhead h2{font-size:13px;line-height:1.25;margin:0 0 3px;letter-spacing:-.2px}.dv-panelhead p{font-size:10px;color:var(--dv-ink2);margin:0}.dv-subtle{border:1px solid var(--dv-line);background:var(--dv-surface);border-radius:var(--dv-r2);padding:6px 8px;color:var(--dv-ink2);font-size:9px}.dv-chart-wrap{position:relative;height:220px}.dv-chart-wrap svg{width:100%;height:100%;overflow:visible}.dv-chart-grid{stroke:var(--dv-line);stroke-width:1}.dv-chart-label{fill:var(--dv-ink3);font-size:9px}.dv-bar-exp{fill:var(--dv-primary);transform-box:fill-box;transform-origin:center bottom;animation:dv-grow .8s both}.dv-bar-inc{fill:var(--dv-accent);opacity:.72;transform-box:fill-box;transform-origin:center bottom;animation:dv-grow .8s both}.dv-chart-group{cursor:pointer;outline:none}.dv-chart-group:focus .dv-chart-hit,.dv-chart-group:hover .dv-chart-hit{stroke:var(--dv-ink);stroke-width:1.5}.dv-chart-hit{fill:transparent;stroke:transparent}.dv-chart-group[aria-current="true"] .dv-bar-exp{fill:var(--dv-accent)}@keyframes dv-grow{from{transform:scaleY(.05)}to{transform:scaleY(1)}}.dv-legend{display:flex;gap:14px;font-size:9px;color:var(--dv-ink2);margin-top:8px}.dv-legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:var(--dv-primary)}.dv-legend .income i{background:var(--dv-accent)}.dv-tooltip{position:fixed;z-index:12;pointer-events:none;max-width:220px;padding:8px 10px;background:var(--dv-ink);color:var(--dv-surface);border-radius:var(--dv-r2);font-size:10px;box-shadow:var(--dv-shadow);opacity:0;transform:translateY(3px);transition:opacity .16s,transform .16s}.dv-tooltip.show{opacity:1;transform:translateY(0)}.dv-category-list,.dv-ranking-list{display:grid;gap:12px}.dv-rank-row{display:grid;grid-template-columns:25px minmax(80px,1fr) auto;align-items:center;gap:8px}.dv-rank-num{font-size:9px;color:var(--dv-ink3);font-weight:750}.dv-rank-name{font-size:10px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dv-rank-value{font-size:10px;font-weight:750}.dv-rank-track{grid-column:2/4;height:6px;border-radius:20px;background:var(--dv-surface2);overflow:hidden}.dv-rank-track i{display:block;height:100%;width:var(--rank-width);background:var(--dv-primary);border-radius:inherit;transform:scaleX(0);transform-origin:left;animation:dv-rank .7s forwards}.dv-rank-row:nth-child(2) .dv-rank-track i{animation-delay:.08s}.dv-rank-row:nth-child(3) .dv-rank-track i{animation-delay:.16s}.dv-rank-row:nth-child(4) .dv-rank-track i{animation-delay:.24s}@keyframes dv-rank{to{transform:scaleX(1)}}.dv-insight{padding:13px 14px;border-radius:var(--dv-r2);background:var(--dv-surface2);border:1px solid var(--dv-line);margin-bottom:var(--dv-gap);font-size:11px;color:var(--dv-ink2)}.dv-insight strong{color:var(--dv-ink)}.dv-insight .dv-insight-label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--dv-primary);font-weight:800;margin-bottom:4px}.dv-risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--dv-gap);margin-bottom:var(--dv-gap)}.dv-risk{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;background:var(--dv-surface);border:1px solid var(--dv-line);border-radius:var(--dv-r);box-shadow:var(--dv-shadow-sm);min-height:78px}.dv-risk-icon{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--dv-surface2);color:var(--dv-ink2);font-weight:800}.dv-risk[data-risk="bad"] .dv-risk-icon{background:color-mix(in srgb,var(--dv-bad) 13%,var(--dv-surface));color:var(--dv-bad)}.dv-risk[data-risk="warn"] .dv-risk-icon{background:color-mix(in srgb,var(--dv-warn) 14%,var(--dv-surface));color:var(--dv-warn)}.dv-risk b{font-size:10px;display:block}.dv-risk p{margin:3px 0 0;font-size:9px;color:var(--dv-ink2)}.dv-bottom{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,.8fr);gap:var(--dv-gap)}.dv-transactions{padding:0;overflow:hidden}.dv-transactions .dv-panelhead{padding:16px 17px 11px;margin:0}.dv-table-tools{display:flex;gap:6px}.dv-table-wrap{overflow:auto;max-height:490px}table{width:100%;border-collapse:collapse;min-width:670px}.dv-root th{text-align:left;padding:10px 13px;background:var(--dv-surface2);color:var(--dv-ink3);text-transform:uppercase;font-size:8px;letter-spacing:.8px;font-weight:750;position:sticky;top:0;z-index:1}.dv-root th[tabindex="0"]{cursor:pointer}.dv-root th:focus-visible{outline:2px solid var(--dv-primary);outline-offset:-2px}.dv-root td{padding:10px 13px;border-top:1px solid var(--dv-line);font-size:10px;white-space:nowrap}.dv-desc{font-weight:700;font-size:10px}.dv-category{color:var(--dv-ink2);font-size:9px}.dv-status{border-radius:30px;padding:4px 8px;font-size:9px;font-weight:750;display:inline-flex;gap:5px;align-items:center;border:0}.dv-status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.dv-status-paid{background:color-mix(in srgb,var(--dv-good) 12%,var(--dv-surface));color:var(--dv-good)}.dv-status-pending{background:color-mix(in srgb,var(--dv-warn) 14%,var(--dv-surface));color:var(--dv-warn)}.dv-status-late{background:color-mix(in srgb,var(--dv-bad) 12%,var(--dv-surface));color:var(--dv-bad)}.dv-status-neutral{background:var(--dv-surface2);color:var(--dv-ink2)}.dv-amount{font-weight:750}.dv-action{border:0;background:transparent;color:var(--dv-ink3)}.dv-empty{text-align:center;color:var(--dv-ink2);padding:24px!important}.dv-goals{display:grid;gap:12px}.dv-goal{display:flex;gap:10px;align-items:center;padding-bottom:11px;border-bottom:1px solid var(--dv-line)}.dv-goal:last-child{border-bottom:0;padding-bottom:0}.dv-goal-icon{width:32px;height:32px;border-radius:var(--dv-r2);background:var(--dv-surface2);color:var(--dv-primary);display:grid;place-items:center}.dv-goal-info{flex:1;min-width:0}.dv-goal-info b{font-size:10px}.dv-goal-info div{font-size:9px;color:var(--dv-ink2);margin-top:2px}.dv-goal-bar{height:4px;background:var(--dv-surface2);margin-top:5px;border-radius:8px;overflow:hidden}.dv-goal-bar i{height:100%;display:block;background:var(--dv-primary);border-radius:inherit}.dv-goal-amount{text-align:right;font-size:9px;font-weight:750}.dv-goal-amount small{display:block;color:var(--dv-ink2);font-size:8px;font-weight:450}.dv-target{margin-top:13px;padding:11px;background:var(--dv-surface2);border:1px solid var(--dv-line);border-radius:var(--dv-r2);display:flex;justify-content:space-between;gap:8px;align-items:center}.dv-target span{font-size:9px;color:var(--dv-ink2)}.dv-target b{font-size:10px}.dv-footer{text-align:center;color:var(--dv-ink3);font-size:9px;margin-top:15px}.dv-toast{position:fixed;right:18px;bottom:18px;background:var(--dv-ink);color:var(--dv-surface);padding:11px 15px;border-radius:var(--dv-r2);box-shadow:var(--dv-shadow);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:20;font-size:11px}.dv-toast.show{opacity:1;transform:translateY(0)}dialog{border:0;border-radius:var(--dv-r);padding:0;width:min(480px,calc(100% - 28px));background:var(--dv-surface);color:var(--dv-ink);box-shadow:var(--dv-shadow)}dialog::backdrop{background:rgba(5,10,25,.6);backdrop-filter:blur(2px)}.modal{padding:23px}.modal h2{margin:0 0 5px;font-size:18px}.modal p{margin:0 0 18px;color:var(--dv-ink2);font-size:11px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:9px;color:var(--dv-ink2);font-weight:700}.field input,.field select{width:100%;border:1px solid var(--dv-line);padding:9px;border-radius:var(--dv-r2);background:var(--dv-surface);color:var(--dv-ink)}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.cancel{border:1px solid var(--dv-line);background:var(--dv-surface);color:var(--dv-ink);border-radius:var(--dv-r2);padding:8px 12px}.help{padding:15px;border:1px solid var(--dv-line);border-radius:var(--dv-r2);background:var(--dv-surface2);margin-top:15px}.help b{font-size:11px}.help p{margin:5px 0 0;font-size:10px;color:var(--dv-ink2);line-height:1.6}.help code{color:var(--dv-primary);background:var(--dv-surface);padding:2px 4px;border-radius:4px}.dv-live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.dv-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.dv-grid-main{grid-template-columns:1.3fr 1fr}.dv-risk-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.dv-side{width:60px;flex-basis:60px;padding:20px 7px}.dv-brand{padding:0;justify-content:center}.dv-brand>div:last-child,.dv-navtitle,.dv-nav button:not(.active),.dv-side-note{display:none}.dv-nav button{padding:10px;text-align:center}.dv-nav button span{width:auto}.dv-main{padding:15px 11px 30px}.dv-top{margin-bottom:13px}.dv-hero{padding:19px}.dv-hero-inner{align-items:flex-start}.dv-hero h1{font-size:23px}.dv-hero p{max-width:350px;font-size:10px}.dv-hero-side{display:none}.dv-ticker-label{padding:0 8px;font-size:8px}.dv-cards{gap:8px}.dv-card{padding:12px}.dv-card-top{font-size:9px}.dv-value{font-size:19px}.dv-card-foot{font-size:8px}.dv-grid-main,.dv-bottom{grid-template-columns:1fr}.dv-risk-grid{grid-template-columns:1fr}.dv-filters{gap:6px}.dv-filter-label{width:100%}.dv-filters select{min-width:0;flex:1}.dv-filters input{min-width:100%;order:3}.dv-panel{padding:14px}.dv-transactions{padding:0}.dv-transactions .dv-panelhead{display:block;padding:14px}.dv-table-tools{margin-top:9px}.dv-chart-wrap{height:195px}.dv-chip{font-size:0}.dv-chip i{font-size:initial}.dv-month{max-width:135px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
-</head>
-<body>
-<aside>
-  <div class="brand"><div class="logo">⌂</div><div><b>Casa em equilíbrio</b><small>Planejamento familiar</small></div></div>
-  <div>
-    <div class="nav-label">Seu espaço</div>
-    <nav>
-      <a href="#visao">▦ Visão geral</a>
-      <a href="#lancamentos">↕ Lançamentos</a>
-      <a href="#objetivos">◎ Objetivos</a>
-      <a id="navConn">⚙ Conexão e ajustes</a>
-    </nav>
-  </div>
-  <div class="quote"><b>Uma decisão de cada vez</b>Planejar hoje ajuda a casa a respirar amanhã.</div>
-</aside>
+<div class="dv-root" id="appRoot" data-theme="light"><div class="dv-layout"><aside class="dv-side"><div class="dv-brand"><div class="dv-logo">⌂</div><div><strong>Casa em equilíbrio</strong><small>Planejamento familiar</small></div></div><div><p class="dv-navtitle">Seu espaço</p><nav class="dv-nav"><button class="active" aria-current="page"><span>▦</span>Visão geral</button><button onclick="document.querySelector('#lancamentos').scrollIntoView({behavior:'smooth'})"><span>↕</span>Lançamentos</button><button onclick="document.querySelector('#objetivos').scrollIntoView({behavior:'smooth'})"><span>◎</span>Objetivos</button><button onclick="openSettings()"><span>⚙</span>Conexão e ajustes</button></nav></div><div class="dv-side-note"><b>Uma decisão de cada vez</b><p>Planejar hoje ajuda a casa a respirar amanhã.</p></div></aside><main class="dv-main"><div class="dv-top"><div>Meu lar <span>›</span> Visão executiva</div><div class="dv-top-right"><span class="dv-chip" id="conn" role="status"><i></i><span>Demonstração</span></span><select class="dv-month" id="monthPick" aria-label="Competência"></select><button class="dv-icon-btn" id="themeToggle" aria-label="Ativar tema escuro" title="Alternar tema">◐</button></div></div>
+<section class="dv-connection-alert" id="connectionAlert" role="alert" aria-live="assertive" hidden><div><h2 id="connectionTitle">A planilha não está conectada</h2><p id="connectionMessage">O painel está mostrando dados de demonstração.</p><small id="connectionDetail">Abra “Conexão e ajustes” para revisar o endereço e as permissões.</small></div><div class="dv-alert-actions"><button type="button" onclick="openSettings()">Ver conexão</button><button type="button" class="dv-alert-primary" id="retryConnectionBtn">Tentar novamente</button></div></section>
+<section class="dv-hero"><div class="dv-hero-inner"><div><div class="dv-eyebrow">Painel executivo · <span id="heroMonth"></span></div><h1>Seu dinheiro, com clareza.</h1><p>Uma leitura objetiva para decidir os próximos passos da família.</p></div><div class="dv-hero-side"><span>Saldo planejado</span><strong id="heroBalance">R$ 0</strong><button class="dv-primary-btn" onclick="openForm()">＋ Novo lançamento</button></div></div></section>
+<div class="dv-ticker" aria-label="Resumo do período"><div class="dv-ticker-label">PULSO DO MÊS</div><div class="dv-ticker-window"><div class="dv-ticker-track" id="tickerTrack"></div></div></div>
+<section class="dv-filters" aria-label="Filtros do painel"><span class="dv-filter-label">Filtrar visão</span><select id="categoryFilter" aria-label="Categoria"><option value="">Todas as categorias</option></select><select id="statusFilter" aria-label="Status"><option value="">Todos os status</option><option>Pago</option><option>Não pago</option><option>Atrasado</option><option>A confirmar</option><option>Cancelado</option></select><input id="searchFilter" type="search" placeholder="Buscar descrição ou categoria…" aria-label="Buscar lançamentos"><button class="dv-clear" id="clearFilters">Limpar filtros</button></section>
+<section class="dv-cards"><article class="dv-card"><div class="dv-card-top">Receitas previstas <span class="dv-icon">↗</span></div><div class="dv-value" id="incomeTotal">R$ 0</div><div class="dv-card-foot"><span>Entradas na competência</span><span class="dv-delta" id="incomeDelta">—</span></div></article><article class="dv-card"><div class="dv-card-top">Despesas previstas <span class="dv-icon">↘</span></div><div class="dv-value" id="expenseTotal">R$ 0</div><div class="dv-card-foot"><span>Compromissos do período</span><span class="dv-delta" id="expenseDelta">—</span></div></article><article class="dv-card"><div class="dv-card-top">Despesas pagas <span class="dv-icon">✓</span></div><div class="dv-value" id="paidTotal">R$ 0</div><div class="dv-card-foot"><span id="paidHint">Pagamentos confirmados</span><span class="dv-delta" id="paidRatio">—</span></div></article><article class="dv-card"><div class="dv-card-top">Saldo planejado <span class="dv-icon">◷</span></div><div class="dv-value" id="balanceTotal">R$ 0</div><div class="dv-card-foot"><span>Receitas menos despesas</span><span class="dv-delta" id="balanceDelta">—</span></div></article></section>
+<section class="dv-grid-main"><article class="dv-panel"><div class="dv-panelhead"><div><h2>Fluxo por competência</h2><p>Receitas e despesas mensais · selecione uma barra para abrir o mês</p></div><span class="dv-subtle" id="chartLabel">—</span></div><div class="dv-chart-wrap"><svg id="monthChart" viewBox="0 0 720 220" role="img" aria-label="Gráfico de receitas e despesas por mês"></svg></div><div class="dv-legend"><span><i></i>Despesas</span><span class="income"><i></i>Receitas</span></div></article><article class="dv-panel"><div class="dv-panelhead"><div><h2>Ranking de despesas</h2><p>Maiores categorias desta competência</p></div></div><div class="dv-ranking-list" id="categoryList"></div></article></section>
+<div class="dv-insight" id="executiveRead" aria-live="polite"><span class="dv-insight-label">Leitura executiva</span>Carregando resumo do período…</div>
+<section class="dv-risk-grid" id="riskGrid" aria-label="Pontos de atenção"></section>
+<section class="dv-bottom"><article class="dv-panel dv-transactions" id="lancamentos"><div class="dv-panelhead"><div><h2>Lançamentos</h2><p id="tableSummary">Contas, compras e entradas da família</p></div><div class="dv-table-tools"><button class="dv-subtle" id="copyBtn">Copiar</button><button class="dv-subtle" id="csvBtn">Baixar CSV</button></div></div><div class="dv-table-wrap"><table><thead><tr><th tabindex="0" role="columnheader" aria-sort="none" data-sort="description">Descrição</th><th tabindex="0" role="columnheader" aria-sort="none" data-sort="category">Categoria</th><th tabindex="0" role="columnheader" aria-sort="none" data-sort="dueDate">Vencimento</th><th tabindex="0" role="columnheader" aria-sort="none" data-sort="status">Status</th><th tabindex="0" role="columnheader" aria-sort="none" data-sort="value">Valor</th><th aria-label="Ações"></th></tr></thead><tbody id="rows"></tbody></table></div></article><article class="dv-panel" id="objetivos"><div class="dv-panelhead"><div><h2>Planos da família</h2><p>Objetivos para construir com calma</p></div><button class="dv-subtle" onclick="openGoal()">＋ Adicionar</button></div><div class="dv-goals" id="goals"></div><div class="dv-target"><span>Total a alcançar nos planos</span><b id="targetAmount">R$ 0</b></div><div class="dv-goals-note" id="goalsNote">Carregando objetivos…</div></article></section><div class="dv-footer">Um orçamento é uma ferramenta de conversa — não de cobrança.</div></main></div></div><div class="dv-tooltip" id="chartTooltip" role="status"></div><div class="dv-toast" id="toast" role="status"></div>
+<dialog id="addDialog"><form id="addForm" class="modal"><h2>Novo lançamento</h2><p>Registre uma entrada ou despesa da família.</p><div class="formgrid"><div class="field full"><label for="fdesc">Descrição</label><input id="fdesc" required></div><div class="field"><label for="fvalue">Valor</label><input id="fvalue" type="number" min="0.01" step="0.01" required></div><div class="field"><label for="ftype">Tipo</label><select id="ftype"><option>Despesa</option><option>Receita</option></select></div><div class="field"><label for="fcategory">Categoria</label><input id="fcategory" value="Outros"></div><div class="field"><label for="fdate">Vencimento</label><input id="fdate" type="date"></div><div class="field"><label for="fstatus">Status</label><select id="fstatus"><option>Não pago</option><option>Pago</option><option>A confirmar</option></select></div><div class="field"><label for="fmethod">Forma de pagamento</label><input id="fmethod"></div></div><div class="modalfoot"><button type="button" class="cancel" onclick="document.getElementById('addDialog').close()">Cancelar</button><button class="dv-primary-btn" type="submit">Salvar</button></div></form></dialog><dialog id="goalDialog"><form id="goalForm" class="modal"><h2 id="goalTitle">Novo objetivo</h2><p>Defina o plano e quanto já foi guardado. Todos com acesso de edição veem a mesma lista.</p><div class="formgrid"><div class="field full"><label for="gname">Nome</label><input id="gname" required maxlength="60"></div><div class="field full"><label for="gdetail">Detalhe</label><input id="gdetail" maxlength="80" placeholder="Ex.: Plano de férias"></div><div class="field"><label for="gamount">Já guardado (R$)</label><input id="gamount" type="number" min="0" step="0.01" required></div><div class="field"><label for="gtarget">Meta (R$)</label><input id="gtarget" type="number" min="1" step="0.01" required></div><div class="field"><label for="gicon">Ícone</label><select id="gicon"><option>⌂</option><option>✈</option><option>✦</option><option>◎</option><option>♥</option><option>★</option></select></div></div><div class="modalfoot"><button type="button" class="dv-danger" id="goalDelete" hidden>Excluir</button><button type="button" class="cancel" onclick="document.getElementById('goalDialog').close()">Cancelar</button><button class="dv-primary-btn" type="submit">Salvar</button></div></form></dialog><dialog id="settingsDialog"><form class="modal"><h2>Conexão e ajustes</h2><p>Cole a URL publicada do Apps Script para sincronizar com a planilha.</p><div class="field"><label for="apiUrl">URL do Apps Script</label><input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec"></div><div class="modalfoot"><button type="button" class="cancel" onclick="document.getElementById('settingsDialog').close()">Fechar</button><button id="connectBtn" class="dv-primary-btn">Conectar</button></div></form></dialog><script>const LS=(()=>{try{let s=window.localStorage;s.getItem('x');return s}catch(_){let m={};return{getItem:k=>k in m?m[k]:null,setItem:(k,v)=>{m[k]=String(v)}}}})();const SAMPLE=[
+{id:'DEMO-01',description:'Mercado da semana',category:'Alimentação',type:'Despesa',value:486.32,status:'Pago',dueDate:'2026-11-03',method:'Cartão'},
+{id:'DEMO-02',description:'Aluguel',category:'Moradia',type:'Despesa',value:1850,status:'Pago',dueDate:'2026-11-05',method:'Pix'},
+{id:'DEMO-03',description:'Conta de energia',category:'Moradia',type:'Despesa',value:214.76,status:'Não pago',dueDate:'2026-11-10',method:'Débito automático'},
+{id:'DEMO-04',description:'Internet residencial',category:'Serviços',type:'Despesa',value:119.90,status:'Não pago',dueDate:'2026-11-12',method:'Boleto'},
+{id:'DEMO-05',description:'Transporte',category:'Transporte',type:'Despesa',value:236.50,status:'Pago',dueDate:'2026-11-14',method:'Pix'},
+{id:'DEMO-06',description:'Consulta médica',category:'Saúde',type:'Despesa',value:180,status:'A confirmar',dueDate:'2026-11-17',method:''},
+{id:'DEMO-07',description:'Salário',category:'Salário',type:'Receita',value:6400,status:'Pago',dueDate:'2026-11-01',method:'Transferência'},
+{id:'DEMO-08',description:'Aula de música',category:'Educação',type:'Despesa',value:220,status:'Não pago',dueDate:'2026-11-20',method:'Pix'},
+{id:'DEMO-09',description:'Cinema em família',category:'Lazer',type:'Despesa',value:95,status:'Pago',dueDate:'2026-11-21',method:'Cartão'},
+{id:'DEMO-10',description:'Freelance',category:'Outros',type:'Receita',value:850,status:'A confirmar',dueDate:'2026-11-25',method:''},
+{id:'DEMO-11',description:'Água e esgoto',category:'Moradia',type:'Despesa',value:98.40,status:'Não pago',dueDate:'2026-11-27',method:'Boleto'}
+];let data=JSON.parse(LS.getItem('casa_demo_v1')||'null')||SAMPLE;const DEFAULT_API_URL='https://script.google.com/macros/s/AKfycbwMfOFJQ6C-8o2y77jSog1gg9NTbytV-XavN1_pYimx8zbyvAnjmf-L9hF2ew2raKIxSw/exec';let apiUrl=LS.getItem('casa_api_url')||DEFAULT_API_URL;let activeMonth=new Date().toISOString().slice(0,7);if(activeMonth<'2020-01')activeMonth='2026-11';
+const fmt=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0),monthName=m=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(m+'-15T12:00:00'));function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function monthOf(x){return (x.dueDate||x.competencia||x.month||'').slice(0,7)}function total(xs){return xs.reduce((s,x)=>s+(Number(x.value)||0),0)}function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2700)}
+function fillMonths(){let sel=document.getElementById('monthPick'), months=new Set([activeMonth,...data.map(monthOf).filter(Boolean)]);sel.innerHTML=[...months].sort().reverse().map(m=>`<option value="${esc(m)}">${esc(monthName(m))}</option>`).join('');sel.value=months.has(activeMonth)?activeMonth:[...months].sort().reverse()[0];activeMonth=sel.value;sel.onchange=()=>{activeMonth=sel.value;render()}}
+function render(){let monthRows=data.filter(x=>monthOf(x)===activeMonth),expenses=monthRows.filter(x=>x.type!=='Receita'&&x.status!=='Cancelado'),income=monthRows.filter(x=>x.type==='Receita'&&x.status!=='Cancelado'),paid=expenses.filter(x=>x.status==='Pago');let expenseTotal=total(expenses),incomeTotal=total(income),paidTotal=total(paid),balance=incomeTotal-expenseTotal,prev=new Date(activeMonth+'-15T12:00:00');prev.setMonth(prev.getMonth()-1);let pm=prev.toISOString().slice(0,7),old=data.filter(x=>monthOf(x)===pm&&x.status!=='Cancelado'),oldExpense=total(old.filter(x=>x.type!=='Receita')),oldIncome=total(old.filter(x=>x.type==='Receita')),oldBalance=oldIncome-oldExpense;document.getElementById('incomeTotal').textContent=fmt(incomeTotal);document.getElementById('expenseTotal').textContent=fmt(expenseTotal);document.getElementById('paidTotal').textContent=fmt(paidTotal);document.getElementById('balanceTotal').textContent=fmt(balance);document.getElementById('heroBalance').textContent=fmt(balance);document.getElementById('heroMonth').textContent=monthName(activeMonth);document.getElementById('paidHint').textContent=`${paid.length} de ${expenses.length} despesas pagas`;document.getElementById('paidRatio').textContent=expenseTotal?`${Math.round(paidTotal/expenseTotal*100)}% quitado`:'Sem despesas';document.getElementById('chartLabel').textContent=monthName(activeMonth);setDelta('incomeDelta',incomeTotal,oldIncome,false);setDelta('expenseDelta',expenseTotal,oldExpense,true);setDelta('balanceDelta',balance,oldBalance,false);renderCategories(expenses);renderTable(data);renderGoals();renderTicker(expenses,income,paid,balance);renderChart();renderExecutive(expenses,income,paid,balance);renderRisks(expenses);}
+function setDelta(id,current,previous,inverse){let el=document.getElementById(id);if(!previous){el.textContent='Sem base anterior';el.className='dv-delta';return}let pct=Math.round((current-previous)/Math.abs(previous)*100),improved=inverse?pct<=0:pct>=0;el.textContent=`${pct>0?'▲':pct<0?'▼':'•'} ${Math.abs(pct)}% vs. mês anterior`;el.className='dv-delta '+(improved?'dv-good':pct===0?'':'dv-bad')}
+function normalize(s){return String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()}
+function renderTicker(expenses,income,paid,balance){let pending=expenses.filter(x=>x.status!=='Pago'),late=expenses.filter(x=>x.status==='Atrasado'||(x.status!=='Pago'&&x.dueDate&&x.dueDate<new Date().toISOString().slice(0,10)));let items=[['Receitas',fmt(total(income))],['Despesas',fmt(total(expenses))],['Pago',fmt(total(paid))],['Em aberto',fmt(total(pending))],['Saldo planejado',fmt(balance)],['Contas em atraso',String(late.length)]];let html=items.map(([a,b])=>`<span class="dv-ticker-item">${a}<b>${esc(b)}</b></span>`).join('');document.getElementById('tickerTrack').innerHTML=html+html}
+function renderChart(){let months=[...new Set(data.map(monthOf).filter(Boolean))].sort().slice(-8);if(!months.length)months=[activeMonth];let W=720,H=220,left=32,right=12,top=12,bottom=34,base=H-bottom,plotH=base-top,step=(W-left-right)/months.length,max=Math.max(1,...months.flatMap(m=>{let xs=data.filter(x=>monthOf(x)===m&&x.status!=='Cancelado');return [total(xs.filter(x=>x.type==='Receita')),total(xs.filter(x=>x.type!=='Receita'))]}));let grid=[.25,.5,.75,1].map(f=>`<line class="dv-chart-grid" x1="${left}" y1="${base-plotH*f}" x2="${W-right}" y2="${base-plotH*f}"/>`).join('');let groups=months.map((m,i)=>{let xs=data.filter(x=>monthOf(x)===m&&x.status!=='Cancelado'),inc=total(xs.filter(x=>x.type==='Receita')),exp=total(xs.filter(x=>x.type!=='Receita')),cx=left+step*i+step/2,bw=Math.min(18,step*.25),he=Math.max(1,exp/max*plotH),hi=Math.max(1,inc/max*plotH),label=new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(m+'-15T12:00:00')).replace('.',''),current=m===activeMonth;return `<g class="dv-chart-group" data-month="${esc(m)}" tabindex="0" role="button" aria-label="${esc(monthName(m))}: despesas ${esc(fmt(exp))}, receitas ${esc(fmt(inc))}" aria-current="${current}"><rect class="dv-chart-hit" x="${cx-step*.43}" y="${top}" width="${step*.86}" height="${plotH+28}"/><rect class="dv-bar-exp" x="${cx-bw-2}" y="${base-he}" width="${bw}" height="${he}" rx="4"/><rect class="dv-bar-inc" x="${cx+2}" y="${base-hi}" width="${bw}" height="${hi}" rx="4"/><text class="dv-chart-label" x="${cx}" y="${H-9}" text-anchor="middle">${esc(label)}</text><title>${esc(monthName(m))}: despesas ${esc(fmt(exp))}, receitas ${esc(fmt(inc))}</title></g>`}).join('');let svg=document.getElementById('monthChart');svg.innerHTML=grid+groups;svg.querySelectorAll('.dv-chart-group').forEach(g=>{g.addEventListener('mouseenter',e=>showTooltip(g,e));g.addEventListener('mousemove',e=>placeTooltip(e.clientX,e.clientY));g.addEventListener('mouseleave',hideTooltip);g.addEventListener('focus',()=>{let r=g.getBoundingClientRect();showTooltip(g,{clientX:r.left+r.width/2,clientY:r.top+12})});g.addEventListener('blur',hideTooltip);g.addEventListener('click',()=>selectChartMonth(g.dataset.month));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectChartMonth(g.dataset.month)}})})}
+function showTooltip(g,e){let xs=data.filter(x=>monthOf(x)===g.dataset.month&&x.status!=='Cancelado'),inc=total(xs.filter(x=>x.type==='Receita')),exp=total(xs.filter(x=>x.type!=='Receita')),t=document.getElementById('chartTooltip');t.innerHTML=`<b>${esc(monthName(g.dataset.month))}</b><br>Despesas: ${esc(fmt(exp))}<br>Receitas: ${esc(fmt(inc))}`;t.classList.add('show');placeTooltip(e.clientX,e.clientY)}
+function placeTooltip(x,y){let t=document.getElementById('chartTooltip'),pad=8;t.style.left='0px';t.style.top='0px';let r=t.getBoundingClientRect(),left=Math.max(pad,Math.min(x+12,innerWidth-r.width-pad)),top=y-r.height-12;if(top<pad)top=Math.min(innerHeight-r.height-pad,y+14);t.style.left=left+'px';t.style.top=top+'px'}function hideTooltip(){document.getElementById('chartTooltip').classList.remove('show')}function selectChartMonth(m){activeMonth=m;fillMonths();render()}
+function renderExecutive(expenses,income,paid,balance){let top=[...Object.entries(expenses.reduce((o,x)=>(o[x.category||'Outros']=(o[x.category||'Outros']||0)+(Number(x.value)||0),o),{}))].sort((a,b)=>b[1]-a[1])[0],pending=expenses.filter(x=>x.status!=='Pago');let text=top?`A maior categoria é <strong>${esc(top[0])}</strong>, com <strong>${fmt(top[1])}</strong> (${expenses.length?Math.round(top[1]/Math.max(1,total(expenses))*100):0}% das despesas). `:'Ainda não há despesas registradas nesta competência. ';text+=balance>=0?`O saldo planejado está positivo em <strong>${fmt(balance)}</strong>.`:`O planejamento indica déficit de <strong>${fmt(Math.abs(balance))}</strong>; vale revisar compromissos ou entradas.`;text+=` Foram confirmados ${paid.length} pagamentos e há ${pending.length} despesa(s) em aberto.`;document.getElementById('executiveRead').innerHTML=`<span class="dv-insight-label">Leitura executiva</span>${text}`}
+function renderRisks(expenses){let today=new Date().toISOString().slice(0,10),late=expenses.filter(x=>x.status==='Atrasado'||(x.status!=='Pago'&&x.dueDate&&x.dueDate<today)),soon=expenses.filter(x=>x.status!=='Pago'&&x.status!=='Cancelado'&&x.dueDate&&x.dueDate>=today&&x.dueDate<=new Date(Date.now()+7*86400000).toISOString().slice(0,10)),open=expenses.filter(x=>x.status!=='Pago'),items=[{risk:late.length?'bad':'',icon:late.length?'!':'✓',title:`${late.length} conta(s) atrasada(s)`,detail:late.length?fmt(total(late))+' aguardando pagamento':'Nenhum atraso identificado'}, {risk:soon.length?'warn':'',icon:soon.length?'◷':'✓',title:`${soon.length} vencimento(s) em 7 dias`,detail:soon.length?fmt(total(soon))+' próximos do vencimento':'Sem vencimentos próximos'}, {risk:open.length?'warn':'',icon:open.length?'↗':'✓',title:`${open.length} despesa(s) em aberto`,detail:open.length?fmt(total(open))+' ainda não confirmados':'Todas as despesas estão pagas'}];document.getElementById('riskGrid').innerHTML=items.map(x=>`<article class="dv-risk" data-risk="${x.risk}" aria-label="${esc(x.title)}. ${esc(x.detail)}"><span class="dv-risk-icon" aria-hidden="true">${x.icon}</span><div><b>${esc(x.title)}</b><p>${esc(x.detail)}</p></div></article>`).join('')}
+function renderCategories(xs){let sums={};xs.forEach(x=>sums[x.category||'Outros']=(sums[x.category||'Outros']||0)+(Number(x.value)||0));let entries=Object.entries(sums).sort((a,b)=>b[1]-a[1]).slice(0,5),max=entries[0]?.[1]||1;document.getElementById('categoryList').innerHTML=entries.length?entries.map(([c,v],i)=>`<div class="dv-rank-row"><span class="dv-rank-num">${String(i+1).padStart(2,'0')}</span><span class="dv-rank-name">${esc(c)}</span><span class="dv-rank-value">${fmt(v)}</span><div class="dv-rank-track"><i style="--rank-width:${Math.max(4,v/max*100)}%"></i></div></div>`).join(''):'<div class="dv-empty">Sem despesas nesta competência.</div>';let cf=document.getElementById('categoryFilter'),old=cf.value;cf.innerHTML='<option value="">Todas as categorias</option>'+[...new Set(data.map(x=>x.category||'Outros'))].sort().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');cf.value=[...cf.options].some(o=>o.value===old)?old:''}
 
-<main>
-  <div class="top"><span>Meu lar › Visão executiva</span><span class="badge" id="modeBadge">Demonstração ◐</span></div>
+let sortKey='dueDate',sortDir=1,filteredRows=[];function renderTable(xs){let cat=document.getElementById('categoryFilter').value,status=document.getElementById('statusFilter').value,q=normalize(document.getElementById('searchFilter').value).trim(),ignore=new Set(['de','da','do','dos','das','e']),terms=q.split(/\s+/).filter(w=>w&&!ignore.has(w));let list=xs.filter(x=>monthOf(x)===activeMonth).filter(x=>!cat||x.category===cat).filter(x=>!status||x.status===status).filter(x=>!terms.length||terms.every(t=>normalize(`${x.description} ${x.category}`).split(/\s+/).some(word=>word.includes(t)|| (t.length>=5&&word.slice(0,-1)===t.slice(0,-1)))));list.sort((a,b)=>{let av=a[sortKey]??'',bv=b[sortKey]??'';if(sortKey==='value'){av=Number(av)||0;bv=Number(bv)||0;return (av-bv)*sortDir}return String(av).localeCompare(String(bv),'pt-BR',{numeric:true,sensitivity:'base'})*sortDir});filteredRows=list;let heads=document.querySelectorAll('th[data-sort]');heads.forEach(h=>h.setAttribute('aria-sort',h.dataset.sort===sortKey?(sortDir===1?'ascending':'descending'):'none'));document.getElementById('tableSummary').textContent=`${list.length} lançamento(s) · ${monthName(activeMonth)}`;document.getElementById('rows').innerHTML=list.length?list.slice(0,1500).map(x=>{let cls=x.status==='Pago'?'dv-status-paid':x.status==='Atrasado'?'dv-status-late':x.status==='Não pago'?'dv-status-pending':'dv-status-neutral',date=x.dueDate?new Intl.DateTimeFormat('pt-BR').format(new Date(x.dueDate+'T12:00:00')):'—';return `<tr><td><span class="dv-desc">${esc(x.description)}</span><br><span class="dv-category">${esc(x.method||x.type||'')}</span></td><td>${esc(x.category||'Outros')}</td><td>${date}</td><td><button class="dv-status ${cls}" onclick="toggleStatus('${esc(x.id)}')" title="Clique para alterar status">${esc(x.status||'A confirmar')}</button></td><td class="dv-amount">${x.type==='Receita'?'+ ':''}${fmt(x.value)}</td><td><button class="dv-action" onclick="askDelete(this,'${esc(x.id)}')" aria-label="Excluir ${esc(x.description)}" title="Excluir lançamento">•••</button></td></tr>`}).join(''):'<tr><td colspan="6" class="dv-empty">Nenhum lançamento encontrado para esses filtros.</td></tr>'}
+function sortTable(key){if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=1}renderTable(data)}
+function exportRows(delimiter){let headers=['Descrição','Categoria','Vencimento','Status','Valor','Tipo','Forma de pagamento'];let rows=filteredRows.map(x=>[x.description,x.category,x.dueDate,x.status,x.value,x.type,x.method]);let quote=v=>{let s=String(v??'');return delimiter===';'?'"'+s.replace(/"/g,'""')+'"':s.replace(/[\t\n]/g,' ')};return [headers,...rows].map(r=>r.map(quote).join(delimiter)).join('\r\n')}
+let downloadsApi=null;if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{downloadsApi=d}).catch(()=>{});
+async function downloadCsv(){if(!downloadsApi){let blob=new Blob([String.fromCharCode(65279)+exportRows(';')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`lancamentos-${activeMonth}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);toast(`${filteredRows.length} linha(s) exportadas em CSV.`);return}try{await downloadsApi.save({filename:`lancamentos-${activeMonth}.csv`,data:'﻿'+exportRows(';')});toast(`${filteredRows.length} linha(s) exportadas em CSV.`)}catch(e){if(e&&e.code!=='declined')toast('Não foi possível gerar o CSV. Use “Copiar”.')}}
+async function copyRows(){let text=exportRows('\t');try{await navigator.clipboard.writeText(text)}catch(e){let ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}let t=document.getElementById('toast');t.textContent=`${filteredRows.length} linha(s) copiadas.`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
 
-  <div class="banner" id="banner">
-    <h3>A planilha não está conectada</h3>
-    <p>O painel está mostrando dados de demonstração.</p>
-    <p id="bannerMsg">Abra “Conexão e ajustes” para revisar o endereço e as permissões.</p>
-    <div class="row"><button id="btnSeeConn">Ver conexão</button><button id="btnRetry">Tentar novamente</button></div>
-  </div>
-
-  <section id="visao">
-    <div class="hero">
-      <div>
-        <small>Painel executivo · <span id="heroMonth"></span></small>
-        <h1>Seu dinheiro, com clareza.</h1>
-        <p>Uma leitura objetiva para decidir os próximos passos da família.</p>
-      </div>
-      <div class="balance">
-        <div><span>Saldo planejado</span><b id="heroBalance">R$ 0</b></div>
-        <button class="primary" id="btnNew">＋ Novo lançamento</button>
-      </div>
-    </div>
-
-    <div class="filters">
-      <strong>Pulso do mês</strong>
-      <select id="fMonth" title="Competência"></select>
-      <select id="fCat"><option value="">Todas as categorias</option></select>
-      <select id="fStatus">
-        <option value="">Todos os status</option>
-        <option>Pago</option><option>Não pago</option><option>Atrasado</option><option>A confirmar</option><option>Cancelado</option>
-      </select>
-      <button id="btnClear">Limpar filtros</button>
-    </div>
-
-    <div class="kpis">
-      <div class="card kpi"><small>Receitas previstas ↗</small><b id="kRec">R$ 0</b><span id="kRecS">—</span></div>
-      <div class="card kpi"><small>Despesas previstas ↘</small><b id="kDesp">R$ 0</b><span id="kDespS">—</span></div>
-      <div class="card kpi"><small>Despesas pagas ✓</small><b id="kPago">R$ 0</b><span id="kPagoS">—</span></div>
-      <div class="card kpi"><small>Saldo planejado ◷</small><b id="kSaldo">R$ 0</b><span>Receitas menos despesas</span></div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h2>Fluxo por competência</h2>
-        <p class="sub">Receitas e despesas mensais · selecione uma barra para abrir o mês</p>
-        <div class="chart" id="chart"></div>
-        <div class="legend"><span><i class="dot" style="background:var(--red)"></i>Despesas</span><span><i class="dot" style="background:var(--green)"></i>Receitas</span></div>
-      </div>
-      <div class="card">
-        <h2>Ranking de despesas</h2>
-        <p class="sub">Maiores categorias desta competência</p>
-        <div class="rank" id="rank"></div>
-        <div class="insight" id="insight"><b>Leitura executiva</b><br>Carregando resumo do período…</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="lancamentos" class="card">
-    <div class="head">
-      <div><h2>Lançamentos</h2><p class="sub" style="margin:0">Contas, compras e entradas da família</p></div>
-      <div><button id="btnCopy">Copiar</button> <button id="btnCsv">Baixar CSV</button></div>
-    </div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>Descrição</th><th>Categoria</th><th>Vencimento</th><th>Status</th><th>Valor</th><th></th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section id="objetivos">
-    <div class="head">
-      <div><h2>Planos da família</h2><p class="sub" style="margin:0">Objetivos para construir com calma</p></div>
-      <button id="btnGoal">＋ Adicionar</button>
-    </div>
-    <div class="goals" id="goals"></div>
-  </section>
-</main>
-
-<div class="modal" id="mEntry">
-  <div class="box">
-    <h2 id="mEntryTitle">Novo lançamento</h2>
-    <p class="sub">Registre uma entrada ou despesa da família.</p>
-    <div class="form">
-      <label class="full">Descrição<input id="fDesc" maxlength="250"></label>
-      <label>Valor<input id="fValue" inputmode="decimal" placeholder="0,00"></label>
-      <label>Tipo<select id="fType"><option>Despesa</option><option>Receita</option></select></label>
-      <label>Categoria<input id="fCategory" list="catList" placeholder="Ex.: Moradia"><datalist id="catList"></datalist></label>
-      <label>Vencimento<input id="fDue" type="date"></label>
-      <label>Status<select id="fStat"><option>Não pago</option><option>Pago</option><option>A confirmar</option><option>Cancelado</option></select></label>
-      <label>Forma de pagamento<input id="fMethod" placeholder="Pix, cartão…"></label>
-    </div>
-    <div class="actions"><button id="btnEntryCancel">Cancelar</button><button class="primary" id="btnEntrySave">Salvar</button></div>
-  </div>
-</div>
-
-<div class="modal" id="mConn">
-  <div class="box">
-    <h2>Conexão e ajustes</h2>
-    <p class="sub">Cole a URL publicada do Apps Script e o token para sincronizar com a planilha.</p>
-    <div class="form">
-      <label class="full">URL do Apps Script (termina em /exec)<input id="cUrl" placeholder="https://script.google.com/macros/s/.../exec"></label>
-      <label class="full">Token de acesso<input id="cToken" type="password" autocomplete="off"></label>
-    </div>
-    <div class="actions"><button id="btnConnClose">Fechar</button><button class="primary" id="btnConnSave">Conectar</button></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const DEFAULT_API_URL = ''; // opcional: cole aqui a URL /exec
-const $ = function (s) { return document.querySelector(s); };
-const esc = function (v) {
-  return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
-    return { '&': '&', '<': '<', '>': '>', '"': '&quot;', "'": '&#39;' }[c];
-  });
-};
-const fmt = function (n) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n || 0); };
-const pad = function (n) { return ('0' + n).slice(-2); };
-const ymd = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
-const todayStr = ymd(new Date());
-const thisMonth = todayStr.slice(0, 7);
-const monthShort = function (m) {
-  const p = m.split('-');
-  return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }).replace('.', '');
-};
-const monthLong = function (m) {
-  const p = m.split('-');
-  return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-};
-const brDate = function (s) { return s ? s.split('-').reverse().join('/') : '—'; };
-
-const state = { items: [], connected: false, error: '', month: '', cat: '', status: '', editingId: null };
-let conn = JSON.parse(localStorage.getItem('ce_conn') || 'null') || { url: DEFAULT_API_URL, token: '' };
-if (!conn.url) conn.url = DEFAULT_API_URL;
-
-function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove('show'); }, 3200);
-}
-
-/* ---------- API ---------- */
-async function api(action, payload) {
-  if (!conn.url) throw new Error('Informe a URL do Apps Script.');
-  let res;
-  if (action === 'list') {
-    res = await fetch(conn.url + '?action=list&token=' + encodeURIComponent(conn.token || ''));
-  } else {
-    // text/plain evita o preflight de CORS, que o Apps Script não suporta
-    res = await fetch(conn.url, {
-      method: 'POST',
-      body: JSON.stringify(Object.assign({ action: action, token: conn.token }, payload || {}))
-    });
-  }
-  let json;
-  try { json = await res.json(); } catch (e) { throw new Error('Resposta inválida. Confira se a implantação permite acesso a "Qualquer pessoa" e se a URL termina em /exec.'); }
-  if (!json.ok) throw new Error(json.error || 'Erro desconhecido.');
-  return json.data;
-}
-
-function demoItems() {
-  const m = thisMonth;
-  return [
-    { id: 'd1', description: 'Salário', category: 'Renda', type: 'Receita', value: 6500, status: 'Pago', dueDate: m + '-05', paidDate: m + '-05', method: 'Transferência' },
-    { id: 'd2', description: 'Aluguel', category: 'Moradia', type: 'Despesa', value: 1800, status: 'Pago', dueDate: m + '-10', paidDate: m + '-10', method: 'Pix' },
-    { id: 'd3', description: 'Mercado', category: 'Alimentação', type: 'Despesa', value: 950, status: 'Não pago', dueDate: m + '-25', paidDate: '', method: 'Cartão' },
-    { id: 'd4', description: 'Internet', category: 'Contas', type: 'Despesa', value: 120, status: 'A confirmar', dueDate: m + '-28', paidDate: '', method: '' }
-  ];
-}
-
-async function load() {
-  if (!conn.url) { setDemo('Cole a URL publicada do Apps Script em “Conexão e ajustes”.'); return; }
-  try {
-    const data = await api('list');
-    state.items = data.map(function (i) { i.dueDate = i.dueDate || ''; return i; });
-    state.connected = true; state.error = '';
-  } catch (e) {
-    const hint = /fetch/i.test(e.message) ? ' Confira a URL, o acesso da implantação (Qualquer pessoa) e o token.' : '';
-    setDemo(e.message + hint); return;
-  }
-  render();
-}
-function setDemo(msg) { state.items = demoItems(); state.connected = false; state.error = msg; render(); }
-
-/* ---------- Regras ---------- */
-function effStatus(i) {
-  return (i.status === 'Não pago' && i.dueDate && i.dueDate < todayStr) ? 'Atrasado' : i.status;
-}
-const active = function (i) { return effStatus(i) !== 'Cancelado'; };
-function sum(list) { return list.reduce(function (a, i) { return a + i.value; }, 0); }
-
-/* ---------- Render ---------- */
-function render() {
-  const all = state.items;
-  $('#banner').classList.toggle('show', !state.connected);
-  $('#bannerMsg').textContent = state.error;
-  $('#modeBadge').textContent = state.connected ? 'Conectado ●' : 'Demonstração ◐';
-  $('#modeBadge').classList.toggle('ok', state.connected);
-
-  const months = Array.from(new Set(all.map(function (i) { return i.dueDate.slice(0, 7); }).filter(Boolean))).sort();
-  if (months.indexOf(thisMonth) < 0) months.push(thisMonth);
-  months.sort();
-  if (!state.month || months.indexOf(state.month) < 0) state.month = months.indexOf(thisMonth) >= 0 ? thisMonth : months[months.length - 1];
-
-  $('#fMonth').innerHTML = months.map(function (m) {
-    return '<option value="' + m + '"' + (m === state.month ? ' selected' : '') + '>' + esc(monthLong(m)) + '</option>';
-  }).join('');
-  const cats = Array.from(new Set(all.map(function (i) { return i.category; }))).sort();
-  $('#fCat').innerHTML = '<option value="">Todas as categorias</option>' + cats.map(function (c) {
-    return '<option' + (c === state.cat ? ' selected' : '') + '>' + esc(c) + '</option>';
-  }).join('');
-  $('#fStatus').value = state.status;
-  $('#catList').innerHTML = cats.map(function (c) { return '<option value="' + esc(c) + '">'; }).join('');
-
-  const base = all.filter(function (i) {
-    return (!state.cat || i.category === state.cat) && (!state.status || effStatus(i) === state.status);
-  });
-  const monthItems = base.filter(function (i) { return i.dueDate.slice(0, 7) === state.month; });
-  const live = monthItems.filter(active);
-  const rec = live.filter(function (i) { return i.type === 'Receita'; });
-  const desp = live.filter(function (i) { return i.type === 'Despesa'; });
-  const pagas = desp.filter(function (i) { return effStatus(i) === 'Pago'; });
-  const saldo = sum(rec) - sum(desp);
-
-  $('#heroMonth').textContent = monthLong(state.month);
-  $('#heroBalance').textContent = fmt(saldo);
-  $('#kRec').textContent = fmt(sum(rec)); $('#kRecS').textContent = rec.length + ' entrada(s) na competência';
-  $('#kDesp').textContent = fmt(sum(desp)); $('#kDespS').textContent = desp.length + ' compromisso(s) no período';
-  $('#kPago').textContent = fmt(sum(pagas));
-  $('#kPagoS').textContent = sum(desp) ? Math.round(sum(pagas) / sum(desp) * 100) + '% das despesas confirmadas' : 'Pagamentos confirmados';
-  $('#kSaldo').textContent = fmt(saldo);
-  $('#kSaldo').className = saldo < 0 ? 'neg' : '';
-  $('#heroBalance').className = saldo < 0 ? 'neg' : '';
-
-  renderChart(base, months);
-  renderRank(desp, saldo, rec, monthItems);
-  renderRows(monthItems);
-  renderGoals();
-}
-
-function renderChart(base, months) {
-  const data = months.slice(-12).map(function (m) {
-    const l = base.filter(function (i) { return i.dueDate.slice(0, 7) === m && active(i); });
-    return { m: m, exp: sum(l.filter(function (i) { return i.type === 'Despesa'; })), inc: sum(l.filter(function (i) { return i.type === 'Receita'; })) };
-  });
-  const max = Math.max.apply(null, data.map(function (d) { return Math.max(d.exp, d.inc); }).concat([1]));
-  $('#chart').innerHTML = data.map(function (d) {
-    return '<div class="col' + (d.m === state.month ? ' sel' : '') + '" data-m="' + d.m + '" title="' +
-      esc(monthShort(d.m)) + ': despesas ' + esc(fmt(d.exp)) + ', receitas ' + esc(fmt(d.inc)) + '">' +
-      '<div class="bars"><div class="bar exp" style="height:' + (d.exp / max * 100) + '%"></div>' +
-      '<div class="bar inc" style="height:' + (d.inc / max * 100) + '%"></div></div><small>' + esc(monthShort(d.m)) + '</small></div>';
-  }).join('');
-}
-
-function renderRank(desp, saldo, rec, monthItems) {
-  const byCat = {};
-  desp.forEach(function (i) { byCat[i.category] = (byCat[i.category] || 0) + i.value; });
-  const top = Object.keys(byCat).map(function (k) { return [k, byCat[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5);
-  const max = top.length ? top[0][1] : 1;
-  $('#rank').innerHTML = top.length ? top.map(function (t) {
-    return '<div class="r"><small><span>' + esc(t[0]) + '</span><b>' + esc(fmt(t[1])) + '</b></small><div class="track"><i style="width:' + (t[1] / max * 100) + '%"></i></div></div>';
-  }).join('') : '<div class="empty">Sem despesas nesta competência.</div>';
-
-  let text;
-  if (!monthItems.length) text = 'Nenhum lançamento em ' + monthLong(state.month) + '.';
-  else {
-    const atrasados = monthItems.filter(function (i) { return effStatus(i) === 'Atrasado'; }).length;
-    text = saldo >= 0 ? 'O mês fecha com folga de ' + fmt(saldo) + '.' : 'As despesas superam as receitas em ' + fmt(-saldo) + '; vale rever prioridades.';
-    if (top.length) text += ' A maior categoria é ' + top[0][0] + ' (' + fmt(top[0][1]) + ').';
-    if (atrasados) text += ' Há ' + atrasados + ' lançamento(s) atrasado(s).';
-  }
-  $('#insight').innerHTML = '<b>Leitura executiva</b><br>' + esc(text);
-}
-
-function renderRows(list) {
-  const sorted = list.slice().sort(function (a, b) { return (a.dueDate || '').localeCompare(b.dueDate || ''); });
-  $('#rows').innerHTML = sorted.length ? sorted.map(function (i) {
-    const st = effStatus(i);
-    const canPay = st !== 'Pago' && st !== 'Cancelado';
-    return '<tr><td>' + esc(i.description) + (i.method ? '<small>' + esc(i.method) + '</small>' : '') + '</td>' +
-      '<td>' + esc(i.category) + '</td><td>' + brDate(i.dueDate) + '</td>' +
-      '<td><span class="pill p-' + st.replace(/[^A-Za-z]/g, '').replace('ã', 'a') + '">' + esc(st) + '</span></td>' +
-      '<td class="' + (i.type === 'Receita' ? 'pos' : 'neg') + '">' + (i.type === 'Receita' ? '+ ' : '− ') + esc(fmt(i.value)) + '</td>' +
-      '<td class="acts">' + (canPay ? '<button data-act="pay" data-id="' + esc(i.id) + '" title="Marcar como pago">✓</button>' : '') +
-      '<button data-act="edit" data-id="' + esc(i.id) + '" title="Editar">✎</button>' +
-      '<button data-act="del" data-id="' + esc(i.id) + '" title="Excluir">✕</button></td></tr>';
-  }).join('') : '<tr><td colspan="6" class="empty">Nenhum lançamento nesta visão.</td></tr>';
-}
-
-function getGoals() { return JSON.parse(localStorage.getItem('ce_goals') || '[{"name":"Meta de reserva da família","target":0}]'); }
-function renderGoals() {
-  $('#goals').innerHTML = getGoals().map(function (g, idx) {
-    return '<div class="card goal"><small>' + esc(g.name) + '</small><b>' + esc(fmt(g.target)) + '</b>' +
-      '<small>Um orçamento é uma ferramenta de conversa — não de cobrança.</small>' +
-      '<div style="margin-top:8px"><button data-goal="' + idx + '">Remover</button></div></div>';
-  }).join('');
-}
-
-/* ---------- Ações ---------- */
-function requireConn() { if (!state.connected) { toast('Conecte a planilha para salvar alterações.'); return false; } return true; }
-
-function parseValor(s) {
-  s = String(s).replace(/R\$\s?/g, '').trim();
-  if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
-  return Number(s);
-}
-
-function openEntry(item) {
-  state.editingId = item ? item.id : null;
-  $('#mEntryTitle').textContent = item ? 'Editar lançamento' : 'Novo lançamento';
-  $('#fDesc').value = item ? item.description : '';
-  $('#fValue').value = item ? String(item.value).replace('.', ',') : '';
-  $('#fType').value = item ? item.type : 'Despesa';
-  $('#fCategory').value = item ? item.category : '';
-  $('#fDue').value = item ? item.dueDate : '';
-  $('#fStat').value = item ? item.status : 'Não pago';
-  $('#fMethod').value = item ? item.method : '';
-  $('#mEntry').classList.add('show');
-}
-
-async function saveEntry() {
-  if (!requireConn()) return;
-  const value = parseValor($('#fValue').value);
-  if (!$('#fDesc').value.trim()) return toast('A descrição é obrigatória.');
-  if (!isFinite(value) || value <= 0) return toast('Informe um valor maior que zero.');
-  const existing = state.items.find(function (i) { return i.id === state.editingId; });
-  const status = $('#fStat').value;
-  const entry = {
-    description: $('#fDesc').value.trim(), value: value, type: $('#fType').value,
-    category: $('#fCategory').value.trim() || 'Outros', dueDate: $('#fDue').value,
-    status: status, method: $('#fMethod').value.trim(),
-    paidDate: status === 'Pago' ? ((existing && existing.paidDate) || todayStr) : ''
-  };
-  const btn = $('#btnEntrySave'); btn.disabled = true;
-  try {
-    if (state.editingId) await api('update', { id: state.editingId, patch: entry });
-    else await api('create', { entry: entry });
-    $('#mEntry').classList.remove('show');
-    toast('Lançamento salvo.');
-    await load();
-  } catch (e) { toast(e.message); }
-  btn.disabled = false;
-}
-
-async function rowAction(act, id) {
-  const item = state.items.find(function (i) { return i.id === id; });
-  if (!item) return;
-  if (act === 'edit') return state.connected ? openEntry(item) : requireConn();
-  if (!requireConn()) return;
-  try {
-    if (act === 'pay') {
-      await api('update', { id: id, patch: { status: 'Pago', paidDate: todayStr } });
-      toast('Marcado como pago.');
-    } else if (act === 'del') {
-      if (!confirm('Excluir "' + item.description + '"? Esta ação não pode ser desfeita.')) return;
-      await api('delete', { id: id });
-      toast('Lançamento excluído.');
-    }
-    await load();
-  } catch (e) { toast(e.message); }
-}
-
-function exportRows() {
-  const list = state.items.filter(function (i) {
-    return i.dueDate.slice(0, 7) === state.month && (!state.cat || i.category === state.cat) && (!state.status || effStatus(i) === state.status);
-  });
-  const head = ['Descrição', 'Categoria', 'Tipo', 'Vencimento', 'Status', 'Valor'];
-  const rows = list.map(function (i) { return [i.description, i.category, i.type, brDate(i.dueDate), effStatus(i), String(i.value).replace('.', ',')]; });
-  return [head].concat(rows);
-}
-
-/* ---------- Eventos ---------- */
-$('#btnNew').onclick = function () { openEntry(null); };
-$('#btnEntryCancel').onclick = function () { $('#mEntry').classList.remove('show'); };
-$('#btnEntrySave').onclick = saveEntry;
-$('#fMonth').onchange = function (e) { state.month = e.target.value; render(); };
-$('#fCat').onchange = function (e) { state.cat = e.target.value; render(); };
-$('#fStatus').onchange = function (e) { state.status = e.target.value; render(); };
-$('#btnClear').onclick = function () { state.cat = ''; state.status = ''; state.month = ''; render(); };
-$('#chart').onclick = function (e) { const c = e.target.closest('.col'); if (c) { state.month = c.dataset.m; render(); } };
-$('#rows').onclick = function (e) { const b = e.target.closest('button'); if (b) rowAction(b.dataset.act, b.dataset.id); };
-$('#btnRetry').onclick = load;
-function openConn() { $('#cUrl').value = conn.url || ''; $('#cToken').value = conn.token || ''; $('#mConn').classList.add('show'); }
-$('#navConn').onclick = openConn; $('#btnSeeConn').onclick = openConn;
-$('#btnConnClose').onclick = function () { $('#mConn').classList.remove('show'); };
-$('#btnConnSave').onclick = function () {
-  conn = { url: $('#cUrl').value.trim(), token: $('#cToken').value.trim() };
-  localStorage.setItem('ce_conn', JSON.stringify(conn));
-  $('#mConn').classList.remove('show');
-  load();
-};
-$('#btnCopy').onclick = function () {
-  const tsv = exportRows().map(function (r) { return r.join('\t'); }).join('\n');
-  navigator.clipboard.writeText(tsv).then(function () { toast('Tabela copiada.'); }, function () { toast('Não foi possível copiar.'); });
-};
-$('#btnCsv').onclick = function () {
-  const csv = '\ufeff' + exportRows().map(function (r) {
-    return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';');
-  }).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'lancamentos-' + state.month + '.csv'; a.click();
-};
-$('#btnGoal').onclick = function () {
-  const name = prompt('Nome do objetivo:'); if (!name) return;
-  const target = parseValor(prompt('Valor da meta (R$):') || '0');
-  const g = getGoals(); g.push({ name: name.trim(), target: isFinite(target) ? target : 0 });
-  localStorage.setItem('ce_goals', JSON.stringify(g)); renderGoals();
-};
-$('#goals').onclick = function (e) {
-  const b = e.target.closest('[data-goal]'); if (!b) return;
-  const g = getGoals(); g.splice(+b.dataset.goal, 1);
-  localStorage.setItem('ce_goals', JSON.stringify(g)); renderGoals();
-};
-
-load();
+const DEFAULT_GOALS=[{icon:'⌂',name:'Reserva de emergência',detail:'Fundo de segurança',amount:3500,target:10000},{icon:'✈',name:'Viagem em família',detail:'Plano de férias',amount:1800,target:5000},{icon:'✦',name:'Casa e melhorias',detail:'Pequenos projetos',amount:950,target:3000}];
+let goals=(()=>{try{return JSON.parse(LS.getItem('casa_goals_v1')||'null')}catch(_){return null}})()||DEFAULT_GOALS,goalsRef=null,goalsShared=false,goalsReadOnly=false,editingGoal=-1,goalSaving=Promise.resolve();
+function renderGoals(){let el=document.getElementById('goals');el.innerHTML=goals.length?goals.map((g,i)=>{let a=Number(g.amount)||0,t=Math.max(1,Number(g.target)||1);return `<div class="dv-goal"><div class="dv-goal-icon">${esc(g.icon||'◎')}</div><div class="dv-goal-info"><b>${esc(g.name)}</b><div>${esc(g.detail||'')} · ${Math.round(a/t*100)}%</div><div class="dv-goal-bar"><i style="width:${Math.min(100,a/t*100)}%"></i></div></div><div class="dv-goal-amount">${fmt(a)}<small>de ${fmt(t)}</small></div>${goalsReadOnly?'':`<button class="dv-goal-edit" onclick="openGoal(${i})" aria-label="Editar ${esc(g.name)}" title="Editar objetivo">✎</button>`}</div>`}).join(''):'<div class="dv-empty">Nenhum objetivo ainda. Use “＋ Adicionar”.</div>';document.getElementById('targetAmount').textContent=fmt(goals.reduce((s,g)=>s+(Number(g.target)||0),0))}
+function setGoalsNote(s){document.getElementById('goalsNote').textContent=s}
+function openGoal(i){if(goalsReadOnly){toast('Você pode ver os objetivos, mas não editá-los.');return}editingGoal=typeof i==='number'?i:-1;let g=goals[editingGoal]||{icon:'◎',name:'',detail:'',amount:0,target:''};document.getElementById('goalTitle').textContent=editingGoal>=0?'Editar objetivo':'Novo objetivo';document.getElementById('gname').value=g.name;document.getElementById('gdetail').value=g.detail||'';document.getElementById('gamount').value=g.amount;document.getElementById('gtarget').value=g.target;document.getElementById('gicon').value=g.icon||'◎';let del=document.getElementById('goalDelete');del.hidden=editingGoal<0;del.textContent='Excluir';del.dataset.armed='';document.getElementById('goalDialog').showModal()}
+function saveGoals(msg){try{LS.setItem('casa_goals_v1',JSON.stringify(goals))}catch(_){}renderGoals();if(!goalsRef){toast(msg+' (só neste navegador).');return}let body={items:goals.map(g=>({...g}))};goalSaving=goalSaving.then(()=>goalsRef.set(body)).then(()=>toast(msg+' para toda a família.')).catch(e=>{if(e&&e.code==='invalid_argument'){goalsReadOnly=true;renderGoals();setGoalsNote('Seu acesso permite só visualizar os objetivos.');toast('Sem permissão para editar objetivos.')}else toast('Não foi possível salvar o objetivo agora. Tente de novo em instantes.')})}
+document.getElementById('goalForm').addEventListener('submit',e=>{e.preventDefault();let g={icon:document.getElementById('gicon').value,name:document.getElementById('gname').value.trim(),detail:document.getElementById('gdetail').value.trim(),amount:Number(document.getElementById('gamount').value)||0,target:Number(document.getElementById('gtarget').value)||1};if(!g.name)return;goals=goals.slice();if(editingGoal>=0)goals[editingGoal]=g;else goals.push(g);document.getElementById('goalDialog').close();saveGoals('Objetivo salvo')});
+document.getElementById('goalDelete').addEventListener('click',e=>{let b=e.currentTarget;if(!b.dataset.armed){b.dataset.armed='1';b.textContent='Confirmar exclusão';return}goals=goals.filter((_,i)=>i!==editingGoal);document.getElementById('goalDialog').close();saveGoals('Objetivo excluído')});
+async function initGoals(){setGoalsNote('Objetivos salvos só neste navegador.');let db=null;try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(_){db=null}if(!db)return;try{let user=await window.claude.use('user');if(user&&user.can){let w=await user.can('data.write');if(w===false){goalsReadOnly=true;renderGoals()}}}catch(_){}goalsRef=db.doc('family/goals');setGoalsNote('Carregando objetivos da família…');let timer=setTimeout(()=>setGoalsNote('Os objetivos da família ainda não carregaram; mostrando a última cópia.'),10000);goalsRef.onSnapshot(snap=>{if(!snap.metadata.fromCache)clearTimeout(timer);let d=snap.exists?snap.data():null;if(d&&Array.isArray(d.items)){goals=d.items.map(g=>({...g}));try{LS.setItem('casa_goals_v1',JSON.stringify(goals))}catch(_){}}goalsShared=true;renderGoals();if(!snap.metadata.fromCache)setGoalsNote(goalsReadOnly?'Objetivos compartilhados · somente leitura para você.':'Objetivos compartilhados com quem tem acesso a esta página.')},err=>{clearTimeout(timer);goalsRef=null;setGoalsNote('Objetivos salvos só neste navegador.')})}
+function persist(){LS.setItem('casa_demo_v1',JSON.stringify(data))}function toggleStatus(id){let x=data.find(y=>String(y.id)===String(id));if(!x)return;let states=['Não pago','Pago','A confirmar','Cancelado'];x.status=states[(states.indexOf(x.status)+1)%states.length];persist();render();if(entriesCol)dbWrite(entriesCol.doc(String(x.id)).update({status:x.status}));else if(apiUrl)send({action:'update',id:x.id,patch:{status:x.status}}).catch(err=>showDiagnostic('O status mudou apenas no painel',err));else toast('Status atualizado na demonstração. Configure a conexão para sincronizar.')}
+function askDelete(btn,id){let cell=btn.parentElement;cell.innerHTML=`<span class="dv-del-confirm"><button class="yes" type="button">Excluir</button><button type="button">Manter</button></span>`;let [yes,no]=cell.querySelectorAll('button');yes.onclick=()=>deleteEntry(id);no.onclick=()=>renderTable(data);yes.focus()}
+function deleteEntry(id){data=data.filter(x=>String(x.id)!==String(id));persist();render();if(entriesCol)dbWrite(entriesCol.doc(String(id)).delete());else if(apiUrl)send({action:'delete',id}).catch(err=>showDiagnostic('O lançamento foi removido apenas do painel',err));toast('Lançamento removido do painel.')}
+function openForm(){document.getElementById('fdate').value=activeMonth+'-15';document.getElementById('addDialog').showModal()}function openSettings(){if(entriesCol){toast('Os lançamentos já são salvos no banco desta página e compartilhados com quem tem acesso.');return}document.getElementById('apiUrl').value=apiUrl;document.getElementById('settingsDialog').showModal()}
+document.getElementById('addForm').addEventListener('submit',async e=>{e.preventDefault();let x={id:'LOCAL-'+Date.now(),description:document.getElementById('fdesc').value.trim(),value:Number(document.getElementById('fvalue').value),type:document.getElementById('ftype').value,category:document.getElementById('fcategory').value,status:document.getElementById('fstatus').value,dueDate:document.getElementById('fdate').value,method:document.getElementById('fmethod').value};data.unshift(x);activeMonth=(x.dueDate||activeMonth).slice(0,7);persist();fillMonths();render();document.getElementById('addDialog').close();e.target.reset();if(entriesCol){let {id,...rest}=x;dbWrite(entriesCol.doc(String(id)).set(rest),'Lançamento salvo para toda a família.')}else if(apiUrl){try{await send({action:'create',entry:x});await loadRemote();toast('Lançamento sincronizado com a planilha.')}catch(err){showDiagnostic('O lançamento foi salvo apenas neste painel',err)}}else toast('Salvo na demonstração. Configure a conexão para sincronizar.')});
+['categoryFilter','statusFilter'].forEach(id=>document.getElementById(id).addEventListener('change',()=>renderTable(data)));document.getElementById('searchFilter').addEventListener('input',()=>renderTable(data));
+function setConnectionState(state,title='',message='',detail=''){let chip=document.getElementById('conn'),alert=document.getElementById('connectionAlert');chip.querySelector('span').textContent=state;chip.style.color=(state==='Google Sheets'||state==='Banco do artefato')?'var(--dv-good)':state==='Conectando…'?'var(--dv-warn)':'var(--dv-bad)';if(state==='Google Sheets'||state==='Banco do artefato'){alert.hidden=true;alert.classList.remove('show');return}document.getElementById('connectionTitle').textContent=title||'A planilha não está conectada';document.getElementById('connectionMessage').textContent=message||'O painel está mostrando dados de demonstração.';document.getElementById('connectionDetail').textContent=detail||'Use “Tentar novamente” ou abra “Conexão e ajustes”.';alert.hidden=false;alert.classList.add('show')}
+function explainConnectionError(err){let msg=String(err?.message||err||'');if(err?.name==='AbortError')return ['A resposta demorou mais que 15 segundos.','Confira se a implantação do Aplicativo da Web está ativa e tente novamente.'];if(/Failed to fetch|Load failed|NetworkError|fetch/i.test(msg))return ['O navegador não conseguiu acessar a resposta do Apps Script.','Isso costuma ocorrer por URL incorreta, implantação privada ou redirecionamento para login do Google. Confirme “Executar como: Eu” e o acesso permitido para sua conta.'];if(/HTML|JSON|Unexpected token|not valid JSON/i.test(msg))return ['O Apps Script respondeu com uma página de login ou erro, em vez de dados.','Publique como Aplicativo da Web, revise “Quem pode acessar” e confirme que está usando o endereço terminado em /exec.'];if(/HTTP 401|HTTP 403|HTTP 404/i.test(msg))return ['O endereço respondeu com erro de acesso ou não foi encontrado.','Verifique se a implantação está ativa e se as permissões permitem que esta conta acesse o Aplicativo da Web.'];if(/Apps Script informou/i.test(msg))return ['O Apps Script recebeu o pedido, mas informou: '+msg.replace(/^Apps Script informou uma falha:\s*/i,''),'Abra Apps Script → Execuções para ver o registro completo e revise as abas e colunas esperadas.'];return ['Não foi possível concluir a conexão com a planilha.','Confira a implantação e as permissões do Apps Script; os dados exibidos continuam sendo apenas desta prévia.']}
+function showDiagnostic(title,err){let [message,detail]=explainConnectionError(err);document.getElementById('connectionTitle').textContent=title;document.getElementById('connectionMessage').textContent=message;document.getElementById('connectionDetail').textContent=detail;let box=document.getElementById('connectionAlert');box.hidden=false;box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'center'})}
+async function requestJson(url,options={}){let controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000),res;try{res=await fetch(url,{...options,signal:controller.signal,cache:'no-store'});let text=await res.text();if(!res.ok)throw Error('HTTP '+res.status);let j;try{j=JSON.parse(text)}catch(_){throw Error('A resposta não é JSON; pode ser uma página HTML de login ou erro do Google.')}if(j.ok===false)throw Error('Apps Script informou uma falha: '+String(j.error||j.message||'verifique o log de execução do Apps Script.'));return j}finally{clearTimeout(timer)}}
+async function send(payload){if(!apiUrl)throw Error('sem conexão');return requestJson(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})}
+async function loadRemote(){if(!apiUrl)throw Error('URL não configurada');let j=await send({action:'list'});if(!Array.isArray(j.data))throw Error('A resposta não é JSON de lançamentos; confira o formato retornado pelo Apps Script.');data=j.data;persist();setConnectionState('Google Sheets');fillMonths();render()}
+async function testConnection(){if(!apiUrl){setConnectionState('Demonstração','Falta configurar a conexão','O painel está usando dados de demonstração.','Abra “Conexão e ajustes” e informe o URL /exec publicado do Apps Script.');return false}setConnectionState('Conectando…','Testando a conexão','Aguarde enquanto o painel consulta a planilha.','Se a tentativa falhar, a explicação aparecerá aqui no topo.');try{await loadRemote();return true}catch(err){let [message,detail]=explainConnectionError(err);setConnectionState('Demonstração','Não foi possível conectar à planilha',message,detail);return false}}
+document.getElementById('connectBtn').addEventListener('click',async e=>{e.preventDefault();let u=document.getElementById('apiUrl').value.trim();if(!u){setConnectionState('Demonstração','Falta informar o endereço','Cole a URL publicada do Apps Script.','Use o endereço inteiro que começa com https://script.google.com/macros/s/ e termina em /exec.');return}try{let parsed=new URL(u);if(parsed.protocol!=='https:'||parsed.hostname!=='script.google.com'||!parsed.pathname.includes('/macros/s/')||!parsed.pathname.endsWith('/exec'))throw Error('URL inválida')}catch(_){setConnectionState('Demonstração','O endereço parece incompleto ou incorreto','Confira o formato do URL do Apps Script.','O endereço deve começar com https://script.google.com/macros/s/ e terminar em /exec. Não cole apenas o código AKfy... .');return}apiUrl=u;LS.setItem('casa_api_url',u);document.getElementById('settingsDialog').close();await testConnection();if(document.getElementById('conn').querySelector('span').textContent==='Google Sheets')toast('Conectado à planilha.');else document.getElementById('connectionAlert').scrollIntoView({behavior:'smooth',block:'center'})});
+document.getElementById('retryConnectionBtn').addEventListener('click',testConnection);
+document.getElementById('themeToggle').addEventListener('click',()=>{let root=document.getElementById('appRoot'),dark=root.dataset.theme!=='dark';root.dataset.theme=dark?'dark':'light';document.documentElement.dataset.theme=root.dataset.theme;LS.setItem('casa_theme',root.dataset.theme);document.getElementById('themeToggle').setAttribute('aria-label',dark?'Ativar tema claro':'Ativar tema escuro')});document.getElementById('appRoot').dataset.theme=LS.getItem('casa_theme')||document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=document.getElementById('appRoot').dataset.theme;document.getElementById('themeToggle').setAttribute('aria-label',document.getElementById('appRoot').dataset.theme==='dark'?'Ativar tema claro':'Ativar tema escuro');document.getElementById('clearFilters').addEventListener('click',()=>{document.getElementById('categoryFilter').value='';document.getElementById('statusFilter').value='';document.getElementById('searchFilter').value='';renderTable(data)});document.getElementById('csvBtn').addEventListener('click',downloadCsv);document.getElementById('copyBtn').addEventListener('click',copyRows);document.querySelectorAll('th[data-sort]').forEach(h=>{h.addEventListener('click',()=>sortTable(h.dataset.sort));h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sortTable(h.dataset.sort)}})});
+let entriesCol=null,lastRemote=null;
+function dbWrite(p,okMsg){p.then(()=>{if(okMsg)toast(okMsg)}).catch(e=>{if(lastRemote){data=lastRemote;persist();fillMonths();render()}toast(e&&e.code==='invalid_argument'?'Sem permissão para salvar. Seu acesso é só de leitura.':'Não foi possível salvar agora. Tente de novo em instantes.')})}
+async function initEntries(){let db=null;try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(_){db=null}if(!db)return false;entriesCol=db.collection('lancamentos');setConnectionState('Conectando…','Carregando lançamentos','Aguarde enquanto o painel consulta o banco desta página.','Se demorar, os dados exibidos podem estar desatualizados.');let timer=setTimeout(()=>setConnectionState('Demonstração','Os lançamentos ainda não carregaram','Mostrando a última cópia salva neste navegador.','A página atualiza sozinha quando o banco responder.'),10000);entriesCol.onSnapshot(snap=>{if(snap.metadata.fromCache&&snap.empty)return;clearTimeout(timer);data=snap.docs.map(d=>({...d.data(),id:d.id}));lastRemote=data;persist();setConnectionState('Banco do artefato');fillMonths();render()},err=>{clearTimeout(timer);entriesCol=null;setConnectionState('Demonstração','Não foi possível ler o banco','Mostrando os dados salvos neste navegador.','Recarregue a página para tentar de novo.')});return true}
+function legacyConnect(){if(apiUrl){setConnectionState('Conectando…','Testando a conexão','Aguarde enquanto o painel consulta a planilha.','Se falhar, a mensagem explicativa ficará visível no topo do painel.');testConnection()}else{setConnectionState('Demonstração','Falta configurar a conexão','O painel está mostrando dados de demonstração.','Abra “Conexão e ajustes” para informar o URL /exec do Apps Script.')}}fillMonths();render();initGoals();initEntries().then(ok=>{if(!ok)legacyConnect()});
 </script>
-</body>
-</html>
+</body></html>
